@@ -1,4 +1,4 @@
-# Portfolio 1
+# Uganthan's Vistas Inspired Portfolio
 
 A retro Windows-inspired portfolio built with Next.js, React, TypeScript, and Zustand. The site opens like a desktop OS and lets visitors explore an interactive login screen, boot sequence, movable windows, a command prompt, a resume viewer, a gallery, a browser mockup, and mini apps like Minesweeper and Paint.
 
