@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useMemo } from "react";
 
 /* ═══════════════════════════════════════════
    DATA TYPES
@@ -11,101 +11,123 @@ interface GalleryItem {
   title: string;
   gradient: string;
   folder: string;
+  year: number;
 }
 
-interface FolderNode {
+interface SidebarNode {
   id: string;
   label: string;
-  icon: string;
-  children?: FolderNode[];
+  icon: string | React.ReactNode;
+  children?: SidebarNode[];
+  isExpanded?: boolean;
 }
 
 /* ═══════════════════════════════════════════
-   FOLDER TREE DATA
-   ═══════════════════════════════════════════ */
-
-const FOLDER_TREE: FolderNode[] = [
-  {
-    id: "all",
-    label: "All Photos",
-    icon: "🖼️",
-    children: [
-      {
-        id: "asymmetric",
-        label: "Asymmetric Designs",
-        icon: "📁",
-        children: [
-          { id: "techfiesta", label: "Tech Fiesta", icon: "📁" },
-          { id: "hacksymmetric", label: "Hacksymmetric", icon: "📁" },
-        ],
-      },
-      {
-        id: "events",
-        label: "Event Assets",
-        icon: "📁",
-        children: [
-          { id: "talos", label: "TALOS 5.0", icon: "📁" },
-        ],
-      },
-      {
-        id: "creative",
-        label: "Creative Work",
-        icon: "📁",
-        children: [
-          { id: "merchandise", label: "Merchandise", icon: "📁" },
-          { id: "promovideos", label: "Promotional Videos", icon: "📁" },
-        ],
-      },
-    ],
-  },
-];
-
-/* ═══════════════════════════════════════════
-   PLACEHOLDER GALLERY ITEMS
+   GALLERY DATA
    ═══════════════════════════════════════════ */
 
 const GALLERY_ITEMS: GalleryItem[] = [
   // Tech Fiesta
-  { id: "tf-1", title: "Tech Fiesta Poster Design 1", gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)", folder: "techfiesta" },
-  { id: "tf-2", title: "Tech Fiesta Banner", gradient: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)", folder: "techfiesta" },
-  { id: "tf-3", title: "Tech Fiesta Social Media", gradient: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)", folder: "techfiesta" },
-  { id: "tf-4", title: "Tech Fiesta Standee", gradient: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)", folder: "techfiesta" },
-  { id: "tf-5", title: "Tech Fiesta ID Card", gradient: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)", folder: "techfiesta" },
+  { id: "tf-1", title: "Tech Fiesta Poster Design 1", gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)", folder: "techfiesta", year: 2026 },
+  { id: "tf-2", title: "Tech Fiesta Banner", gradient: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)", folder: "techfiesta", year: 2026 },
+  { id: "tf-3", title: "Tech Fiesta Social Media", gradient: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)", folder: "techfiesta", year: 2026 },
+  { id: "tf-4", title: "Tech Fiesta Standee", gradient: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)", folder: "techfiesta", year: 2026 },
+  { id: "tf-5", title: "Tech Fiesta ID Card", gradient: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)", folder: "techfiesta", year: 2026 },
 
   // Hacksymmetric
-  { id: "hk-1", title: "Hacksymmetric Banner", gradient: "linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)", folder: "hacksymmetric" },
-  { id: "hk-2", title: "Hacksymmetric Logo Concept", gradient: "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)", folder: "hacksymmetric" },
-  { id: "hk-3", title: "Hacksymmetric Certificate", gradient: "linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)", folder: "hacksymmetric" },
-  { id: "hk-4", title: "Hacksymmetric Social Post", gradient: "linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)", folder: "hacksymmetric" },
-  { id: "hk-5", title: "Hacksymmetric Poster", gradient: "linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%)", folder: "hacksymmetric" },
-  { id: "hk-6", title: "Hacksymmetric Backdrop", gradient: "linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)", folder: "hacksymmetric" },
+  { id: "hk-1", title: "Hacksymmetric Banner", gradient: "linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)", folder: "hacksymmetric", year: 2025 },
+  { id: "hk-2", title: "Hacksymmetric Logo Concept", gradient: "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)", folder: "hacksymmetric", year: 2025 },
+  { id: "hk-3", title: "Hacksymmetric Certificate", gradient: "linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)", folder: "hacksymmetric", year: 2025 },
+  { id: "hk-4", title: "Hacksymmetric Social Post", gradient: "linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)", folder: "hacksymmetric", year: 2025 },
+  { id: "hk-5", title: "Hacksymmetric Poster", gradient: "linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%)", folder: "hacksymmetric", year: 2025 },
+  { id: "hk-6", title: "Hacksymmetric Backdrop", gradient: "linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)", folder: "hacksymmetric", year: 2025 },
 
   // TALOS 5.0
-  { id: "ta-1", title: "TALOS 5.0 Event Poster", gradient: "linear-gradient(135deg, #f6d365 0%, #fda085 100%)", folder: "talos" },
-  { id: "ta-2", title: "TALOS 5.0 Stage Banner", gradient: "linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)", folder: "talos" },
-  { id: "ta-3", title: "TALOS 5.0 Invitation", gradient: "linear-gradient(135deg, #fdcbf1 0%, #e6dee9 100%)", folder: "talos" },
-  { id: "ta-4", title: "TALOS 5.0 Schedule Card", gradient: "linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)", folder: "talos" },
-  { id: "ta-5", title: "TALOS 5.0 Highlights Reel", gradient: "linear-gradient(135deg, #f5576c 0%, #ff6f61 100%)", folder: "talos" },
+  { id: "ta-1", title: "TALOS 5.0 Event Poster", gradient: "linear-gradient(135deg, #f6d365 0%, #fda085 100%)", folder: "talos", year: 2026 },
+  { id: "ta-2", title: "TALOS 5.0 Stage Banner", gradient: "linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)", folder: "talos", year: 2026 },
+  { id: "ta-3", title: "TALOS 5.0 Invitation", gradient: "linear-gradient(135deg, #fdcbf1 0%, #e6dee9 100%)", folder: "talos", year: 2026 },
+  { id: "ta-4", title: "TALOS 5.0 Schedule Card", gradient: "linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)", folder: "talos", year: 2026 },
+  { id: "ta-5", title: "TALOS 5.0 Highlights Reel", gradient: "linear-gradient(135deg, #f5576c 0%, #ff6f61 100%)", folder: "talos", year: 2026 },
 
   // Merchandise
-  { id: "me-1", title: "T-Shirt Front Design", gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)", folder: "merchandise" },
-  { id: "me-2", title: "T-Shirt Back Design", gradient: "linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%)", folder: "merchandise" },
-  { id: "me-3", title: "Sticker Pack Sheet", gradient: "linear-gradient(135deg, #fddb92 0%, #d1fdff 100%)", folder: "merchandise" },
-  { id: "me-4", title: "Hoodie Mockup", gradient: "linear-gradient(135deg, #9890e3 0%, #b1f4cf 100%)", folder: "merchandise" },
+  { id: "me-1", title: "T-Shirt Front Design", gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)", folder: "merchandise", year: 2024 },
+  { id: "me-2", title: "T-Shirt Back Design", gradient: "linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%)", folder: "merchandise", year: 2024 },
+  { id: "me-3", title: "Sticker Pack Sheet", gradient: "linear-gradient(135deg, #fddb92 0%, #d1fdff 100%)", folder: "merchandise", year: 2024 },
+  { id: "me-4", title: "Hoodie Mockup", gradient: "linear-gradient(135deg, #9890e3 0%, #b1f4cf 100%)", folder: "merchandise", year: 2024 },
 
   // Promotional Videos
-  { id: "pv-1", title: "Promo Teaser Thumbnail", gradient: "linear-gradient(135deg, #c471f5 0%, #fa71cd 100%)", folder: "promovideos" },
-  { id: "pv-2", title: "Event Recap Thumbnail", gradient: "linear-gradient(135deg, #48c6ef 0%, #6f86d6 100%)", folder: "promovideos" },
-  { id: "pv-3", title: "Workshop Intro Frame", gradient: "linear-gradient(135deg, #feada6 0%, #f5efef 100%)", folder: "promovideos" },
-  { id: "pv-4", title: "Behind the Scenes Still", gradient: "linear-gradient(135deg, #a3bded 0%, #6991c7 100%)", folder: "promovideos" },
-  { id: "pv-5", title: "Announcement Video Cover", gradient: "linear-gradient(135deg, #13547a 0%, #80d0c7 100%)", folder: "promovideos" },
+  { id: "pv-1", title: "Promo Teaser Thumbnail", gradient: "linear-gradient(135deg, #c471f5 0%, #fa71cd 100%)", folder: "promovideos", year: 2025 },
+  { id: "pv-2", title: "Event Recap Thumbnail", gradient: "linear-gradient(135deg, #48c6ef 0%, #6f86d6 100%)", folder: "promovideos", year: 2025 },
+  { id: "pv-3", title: "Workshop Intro Frame", gradient: "linear-gradient(135deg, #feada6 0%, #f5efef 100%)", folder: "promovideos", year: 2025 },
+  { id: "pv-4", title: "Behind the Scenes Still", gradient: "linear-gradient(135deg, #a3bded 0%, #6991c7 100%)", folder: "promovideos", year: 2025 },
+  { id: "pv-5", title: "Announcement Video Cover", gradient: "linear-gradient(135deg, #13547a 0%, #80d0c7 100%)", folder: "promovideos", year: 2025 },
 ];
 
 /* ═══════════════════════════════════════════
-   HELPER: Collect all folder IDs under a node
+   SIDEBAR TREE DATA
    ═══════════════════════════════════════════ */
 
-function collectFolderIds(node: FolderNode): string[] {
+const SIDEBAR_TREE: SidebarNode[] = [
+  { id: "all", label: "All Pictures and Videos", icon: "🖼️" },
+  { id: "recently_imported", label: "Recently Imported", icon: "🕒" },
+  {
+    id: "folders",
+    label: "Folders",
+    icon: "📁",
+    isExpanded: true,
+    children: [
+      { id: "folder_pictures", label: "Pictures", icon: "📁", children: [
+        { id: "asymmetric", label: "Asymmetric Designs", icon: "📁", children: [
+          { id: "techfiesta", label: "Tech Fiesta", icon: "📁" },
+          { id: "hacksymmetric", label: "Hacksymmetric", icon: "📁" },
+        ]},
+        { id: "events", label: "Event Assets", icon: "📁", children: [
+          { id: "talos", label: "TALOS 5.0", icon: "📁" },
+        ]},
+        { id: "creative", label: "Creative Work", icon: "📁", children: [
+          { id: "merchandise", label: "Merchandise", icon: "📁" },
+          { id: "promovideos", label: "Promotional Videos", icon: "📁" },
+        ]}
+      ]},
+    ]
+  },
+  { 
+    id: "tags", 
+    label: "Tags", 
+    icon: "🏷️", 
+    isExpanded: true,
+    children: [
+      { id: "tag_create", label: "Create a New Tag", icon: "✏️" },
+      { id: "tag_none", label: "Not Tagged", icon: "🏷️" },
+      { id: "tag_design", label: "Design", icon: "🎨" },
+      { id: "tag_event", label: "Event", icon: "📅" }
+    ]
+  },
+  {
+    id: "date",
+    label: "Date Taken",
+    icon: "📅",
+    isExpanded: true,
+    children: [
+      { id: "date_2026", label: "2026", icon: "📅" },
+      { id: "date_2025", label: "2025", icon: "📅" },
+      { id: "date_2024", label: "2024", icon: "📅" },
+    ]
+  },
+  {
+    id: "ratings",
+    label: "Ratings",
+    icon: "⭐",
+    isExpanded: true,
+    children: [
+      { id: "rate_5", label: "⭐⭐⭐⭐⭐", icon: "⭐" },
+      { id: "rate_4", label: "⭐⭐⭐⭐", icon: "⭐" },
+      { id: "rate_unrated", label: "Not Rated", icon: "☆" },
+    ]
+  }
+];
+
+function collectFolderIds(node: SidebarNode): string[] {
   const ids = [node.id];
   if (node.children) {
     for (const child of node.children) {
@@ -115,7 +137,7 @@ function collectFolderIds(node: FolderNode): string[] {
   return ids;
 }
 
-function findNode(nodes: FolderNode[], id: string): FolderNode | null {
+function findNode(nodes: SidebarNode[], id: string): SidebarNode | null {
   for (const node of nodes) {
     if (node.id === id) return node;
     if (node.children) {
@@ -127,146 +149,7 @@ function findNode(nodes: FolderNode[], id: string): FolderNode | null {
 }
 
 /* ═══════════════════════════════════════════
-   FOLDER TREE ITEM COMPONENT
-   ═══════════════════════════════════════════ */
-
-interface FolderTreeItemProps {
-  node: FolderNode;
-  depth: number;
-  selectedFolder: string;
-  expandedFolders: Set<string>;
-  onSelect: (id: string) => void;
-  onToggleExpand: (id: string) => void;
-}
-
-function FolderTreeItem({
-  node,
-  depth,
-  selectedFolder,
-  expandedFolders,
-  onSelect,
-  onToggleExpand,
-}: FolderTreeItemProps) {
-  const isActive = selectedFolder === node.id;
-  const hasChildren = node.children && node.children.length > 0;
-  const isExpanded = expandedFolders.has(node.id);
-
-  return (
-    <div>
-      <div
-        className={`gallery-folder-item ${isActive ? "gallery-folder-active" : ""}`}
-        style={{ paddingLeft: 8 + depth * 16 }}
-        onClick={() => {
-          onSelect(node.id);
-          if (hasChildren) {
-            onToggleExpand(node.id);
-          }
-        }}
-      >
-        {hasChildren && (
-          <span
-            style={{
-              fontSize: 10,
-              width: 14,
-              textAlign: "center",
-              color: "#888",
-              flexShrink: 0,
-            }}
-          >
-            {isExpanded ? "▼" : "▶"}
-          </span>
-        )}
-        {!hasChildren && <span style={{ width: 14, flexShrink: 0 }} />}
-        <span style={{ fontSize: 14 }}>{node.icon}</span>
-        <span
-          style={{
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-            color: isActive ? "#0058a3" : "#333",
-          }}
-        >
-          {node.label}
-        </span>
-      </div>
-      {hasChildren && isExpanded && (
-        <div>
-          {node.children!.map((child) => (
-            <FolderTreeItem
-              key={child.id}
-              node={child}
-              depth={depth + 1}
-              selectedFolder={selectedFolder}
-              expandedFolders={expandedFolders}
-              onSelect={onSelect}
-              onToggleExpand={onToggleExpand}
-            />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* ═══════════════════════════════════════════
-   THUMBNAIL CARD COMPONENT
-   ═══════════════════════════════════════════ */
-
-interface ThumbnailProps {
-  item: GalleryItem;
-  onClick: () => void;
-}
-
-function Thumbnail({ item, onClick }: ThumbnailProps) {
-  return (
-    <div className="gallery-thumb" onClick={onClick}>
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          background: item.gradient,
-          display: "flex",
-          alignItems: "flex-end",
-          justifyContent: "center",
-          padding: 10,
-          position: "relative",
-        }}
-      >
-        {/* Decorative icon overlay */}
-        <div
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -60%)",
-            fontSize: 32,
-            opacity: 0.3,
-            color: "white",
-          }}
-        >
-          🖼️
-        </div>
-        <span
-          style={{
-            fontSize: 11,
-            color: "white",
-            textShadow: "0 1px 4px rgba(0,0,0,0.5)",
-            textAlign: "center",
-            lineHeight: 1.3,
-            fontWeight: 500,
-            position: "relative",
-            zIndex: 1,
-          }}
-        >
-          {item.title}
-        </span>
-      </div>
-    </div>
-  );
-}
-
-/* ═══════════════════════════════════════════
-   FULLSCREEN VIEWER COMPONENT
+   FULLSCREEN VIEWER
    ═══════════════════════════════════════════ */
 
 interface ViewerProps {
@@ -282,407 +165,352 @@ function FullscreenViewer({ items, currentIndex, onClose, onPrev, onNext }: View
   const [rotation, setRotation] = useState(0);
   const [zoom, setZoom] = useState(1);
 
-  const handleRotate = useCallback(() => {
-    setRotation((r) => r + 90);
-  }, []);
-
-  const handleZoomIn = useCallback(() => {
-    setZoom((z) => Math.min(z + 0.25, 3));
-  }, []);
-
-  const handleZoomOut = useCallback(() => {
-    setZoom((z) => Math.max(z - 0.25, 0.5));
-  }, []);
+  const handleRotate = useCallback(() => setRotation((r) => r + 90), []);
+  const handleZoomIn = useCallback(() => setZoom((z) => Math.min(z + 0.25, 3)), []);
+  const handleZoomOut = useCallback(() => setZoom((z) => Math.max(z - 0.25, 0.5)), []);
 
   if (!item) return null;
 
   const toolbarBtnStyle: React.CSSProperties = {
-    width: 40,
-    height: 36,
-    border: "none",
-    borderRadius: 4,
-    background: "rgba(255,255,255,0.1)",
-    color: "white",
-    fontSize: 16,
-    cursor: "pointer",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
+    width: 40, height: 36, border: "none", borderRadius: 4,
+    background: "rgba(255,255,255,0.1)", color: "white", fontSize: 16,
+    cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
     transition: "background 0.15s",
   };
 
   return (
     <div
       style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(0,0,0,0.88)",
-        zIndex: 99999,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        animation: "fadeIn 0.2s ease",
+        position: "fixed", inset: 0, background: "rgba(0,0,0,0.88)", zIndex: 99999,
+        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
       }}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      {/* Counter */}
-      <div
-        style={{
-          position: "absolute",
-          top: 18,
-          right: 24,
-          color: "rgba(255,255,255,0.6)",
-          fontSize: 13,
-          fontFamily: "var(--font-system)",
-        }}
-      >
+      <div style={{ position: "absolute", top: 18, right: 24, color: "rgba(255,255,255,0.6)", fontSize: 13 }}>
         {currentIndex + 1} / {items.length}
       </div>
 
-      {/* Main preview */}
-      <div
-        style={{
-          width: "70%",
-          maxWidth: 680,
-          aspectRatio: "4 / 3",
-          background: item.gradient,
-          borderRadius: 8,
-          boxShadow: "0 16px 64px rgba(0,0,0,0.5)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          flexDirection: "column",
-          gap: 12,
-          transform: `rotate(${rotation}deg) scale(${zoom})`,
-          transition: "transform 0.3s ease",
-        }}
-      >
+      <div style={{
+        width: "70%", maxWidth: 680, aspectRatio: "4 / 3", background: item.gradient,
+        borderRadius: 8, boxShadow: "0 16px 64px rgba(0,0,0,0.5)",
+        display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 12,
+        transform: `rotate(${rotation}deg) scale(${zoom})`, transition: "transform 0.3s ease",
+      }}>
         <span style={{ fontSize: 56, opacity: 0.3, color: "white" }}>🖼️</span>
-        <span
-          style={{
-            fontSize: 18,
-            color: "white",
-            textShadow: "0 2px 8px rgba(0,0,0,0.4)",
-            fontWeight: 600,
-            textAlign: "center",
-            padding: "0 32px",
-            fontFamily: "var(--font-system)",
-          }}
-        >
+        <span style={{ fontSize: 18, color: "white", textShadow: "0 2px 8px rgba(0,0,0,0.4)", fontWeight: 600 }}>
           {item.title}
         </span>
       </div>
 
-      {/* Left / Right navigation arrows */}
       {currentIndex > 0 && (
-        <button
-          onClick={(e) => { e.stopPropagation(); onPrev(); }}
-          style={{
-            position: "absolute",
-            left: 24,
-            top: "50%",
-            transform: "translateY(-50%)",
-            width: 48,
-            height: 48,
-            borderRadius: "50%",
-            border: "none",
-            background: "rgba(255,255,255,0.12)",
-            color: "white",
-            fontSize: 22,
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            transition: "background 0.15s",
-          }}
-          onMouseEnter={(e) => { (e.target as HTMLButtonElement).style.background = "rgba(255,255,255,0.25)"; }}
-          onMouseLeave={(e) => { (e.target as HTMLButtonElement).style.background = "rgba(255,255,255,0.12)"; }}
-        >
-          ◀
-        </button>
+        <button onClick={(e) => { e.stopPropagation(); onPrev(); }} style={{ position: "absolute", left: 24, top: "50%", transform: "translateY(-50%)", width: 48, height: 48, borderRadius: "50%", border: "none", background: "rgba(255,255,255,0.12)", color: "white", fontSize: 22, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>◀</button>
       )}
       {currentIndex < items.length - 1 && (
-        <button
-          onClick={(e) => { e.stopPropagation(); onNext(); }}
-          style={{
-            position: "absolute",
-            right: 24,
-            top: "50%",
-            transform: "translateY(-50%)",
-            width: 48,
-            height: 48,
-            borderRadius: "50%",
-            border: "none",
-            background: "rgba(255,255,255,0.12)",
-            color: "white",
-            fontSize: 22,
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            transition: "background 0.15s",
-          }}
-          onMouseEnter={(e) => { (e.target as HTMLButtonElement).style.background = "rgba(255,255,255,0.25)"; }}
-          onMouseLeave={(e) => { (e.target as HTMLButtonElement).style.background = "rgba(255,255,255,0.12)"; }}
-        >
-          ▶
-        </button>
+        <button onClick={(e) => { e.stopPropagation(); onNext(); }} style={{ position: "absolute", right: 24, top: "50%", transform: "translateY(-50%)", width: 48, height: 48, borderRadius: "50%", border: "none", background: "rgba(255,255,255,0.12)", color: "white", fontSize: 22, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>▶</button>
       )}
 
-      {/* Bottom Toolbar */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: 56,
-          background: "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 100%)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: 8,
-          padding: "0 24px",
-        }}
-      >
-        <button
-          style={toolbarBtnStyle}
-          title="Previous"
-          onClick={(e) => { e.stopPropagation(); onPrev(); }}
-          disabled={currentIndex === 0}
-        >
-          ◀
-        </button>
-        <button
-          style={toolbarBtnStyle}
-          title="Next"
-          onClick={(e) => { e.stopPropagation(); onNext(); }}
-          disabled={currentIndex >= items.length - 1}
-        >
-          ▶
-        </button>
-
+      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 56, background: "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 100%)", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+        <button style={toolbarBtnStyle} onClick={(e) => { e.stopPropagation(); onPrev(); }} disabled={currentIndex === 0}>◀</button>
+        <button style={toolbarBtnStyle} onClick={(e) => { e.stopPropagation(); onNext(); }} disabled={currentIndex >= items.length - 1}>▶</button>
         <div style={{ width: 1, height: 24, background: "rgba(255,255,255,0.2)", margin: "0 4px" }} />
-
-        <button
-          style={toolbarBtnStyle}
-          title="Rotate"
-          onClick={(e) => { e.stopPropagation(); handleRotate(); }}
-        >
-          ↻
-        </button>
-        <button
-          style={toolbarBtnStyle}
-          title="Zoom In"
-          onClick={(e) => { e.stopPropagation(); handleZoomIn(); }}
-        >
-          +
-        </button>
-        <button
-          style={toolbarBtnStyle}
-          title="Zoom Out"
-          onClick={(e) => { e.stopPropagation(); handleZoomOut(); }}
-        >
-          −
-        </button>
-
+        <button style={toolbarBtnStyle} onClick={(e) => { e.stopPropagation(); handleRotate(); }}>↻</button>
+        <button style={toolbarBtnStyle} onClick={(e) => { e.stopPropagation(); handleZoomIn(); }}>+</button>
+        <button style={toolbarBtnStyle} onClick={(e) => { e.stopPropagation(); handleZoomOut(); }}>−</button>
         <div style={{ width: 1, height: 24, background: "rgba(255,255,255,0.2)", margin: "0 4px" }} />
-
-        <button style={toolbarBtnStyle} title="Slideshow">
-          ▶
-        </button>
-        <button
-          style={{ ...toolbarBtnStyle, background: "rgba(200,50,30,0.5)" }}
-          title="Close"
-          onClick={(e) => { e.stopPropagation(); onClose(); }}
-          onMouseEnter={(e) => { (e.target as HTMLButtonElement).style.background = "rgba(232,17,35,0.8)"; }}
-          onMouseLeave={(e) => { (e.target as HTMLButtonElement).style.background = "rgba(200,50,30,0.5)"; }}
-        >
-          ✕
-        </button>
+        <button style={{ ...toolbarBtnStyle, background: "rgba(200,50,30,0.5)" }} onClick={(e) => { e.stopPropagation(); onClose(); }}>✕</button>
       </div>
     </div>
   );
 }
 
 /* ═══════════════════════════════════════════
-   MAIN PHOTO GALLERY COMPONENT
+   MAIN COMPONENT
    ═══════════════════════════════════════════ */
 
 export default function PhotoGallery() {
-  const [selectedFolder, setSelectedFolder] = useState<string>("all");
-  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
-  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(
-    () => new Set(["all", "asymmetric", "events", "creative"])
+  const [selectedNodeId, setSelectedNodeId] = useState<string>("all");
+  const [expandedNodes, setExpandedNodes] = useState<Set<string>>(
+    () => new Set(["tags", "date", "ratings", "folders", "folder_pictures", "asymmetric", "events", "creative"])
   );
+  
+  const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
+  const [viewerIndex, setViewerIndex] = useState<number | null>(null);
 
-  /* Compute visible items based on selected folder */
-  const visibleItems = React.useMemo(() => {
-    const node = findNode(FOLDER_TREE, selectedFolder);
-    if (!node) return [];
+  // Filter items based on selection
+  const visibleItems = useMemo(() => {
+    if (selectedNodeId === "all" || selectedNodeId === "recently_imported" || selectedNodeId.startsWith("date_") || selectedNodeId.startsWith("rate_") || selectedNodeId.startsWith("tag_")) {
+      // For simplicity in this demo, "All Pictures" and non-folder filters just show everything, 
+      // but if a specific year is clicked, filter by year.
+      if (selectedNodeId.startsWith("date_")) {
+        const year = parseInt(selectedNodeId.replace("date_", ""));
+        return GALLERY_ITEMS.filter(item => item.year === year);
+      }
+      return GALLERY_ITEMS;
+    }
+
+    const node = findNode(SIDEBAR_TREE, selectedNodeId);
+    if (!node) return GALLERY_ITEMS;
     const folderIds = collectFolderIds(node);
     return GALLERY_ITEMS.filter((item) => folderIds.includes(item.folder));
-  }, [selectedFolder]);
+  }, [selectedNodeId]);
 
-  const isViewerOpen = selectedImageIndex !== null;
+  // Group items by year
+  const groupedItems = useMemo(() => {
+    const groups: Record<number, GalleryItem[]> = {};
+    visibleItems.forEach(item => {
+      if (!groups[item.year]) groups[item.year] = [];
+      groups[item.year].push(item);
+    });
+    // Sort years descending
+    return Object.entries(groups).sort((a, b) => Number(b[0]) - Number(a[0]));
+  }, [visibleItems]);
 
-  /* Toggle folder expansion */
-  const handleToggleExpand = useCallback((id: string) => {
-    setExpandedFolders((prev) => {
+  const toggleExpand = (id: string) => {
+    setExpandedNodes(prev => {
       const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
-  }, []);
+  };
 
-  /* Viewer navigation */
-  const handlePrev = useCallback(() => {
-    setSelectedImageIndex((prev) => (prev !== null && prev > 0 ? prev - 1 : prev));
-  }, []);
-
-  const handleNext = useCallback(() => {
-    setSelectedImageIndex((prev) =>
-      prev !== null && prev < visibleItems.length - 1 ? prev + 1 : prev
-    );
-  }, [visibleItems.length]);
-
-  const handleCloseViewer = useCallback(() => {
-    setSelectedImageIndex(null);
-  }, []);
-
-  /* Keyboard navigation for viewer */
+  // Keyboard support for viewer
   useEffect(() => {
-    if (!isViewerOpen) return;
-
+    if (viewerIndex === null) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      switch (e.key) {
-        case "ArrowLeft":
-          handlePrev();
-          break;
-        case "ArrowRight":
-          handleNext();
-          break;
-        case "Escape":
-          handleCloseViewer();
-          break;
-      }
+      if (e.key === "ArrowLeft") setViewerIndex(prev => (prev !== null && prev > 0 ? prev - 1 : prev));
+      if (e.key === "ArrowRight") setViewerIndex(prev => (prev !== null && prev < visibleItems.length - 1 ? prev + 1 : prev));
+      if (e.key === "Escape") setViewerIndex(null);
     };
-
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isViewerOpen, handlePrev, handleNext, handleCloseViewer]);
+  }, [viewerIndex, visibleItems.length]);
 
-  /* Folder label for display */
-  const currentFolderNode = findNode(FOLDER_TREE, selectedFolder);
-  const folderLabel = currentFolderNode?.label ?? "All Photos";
+  /* Sidebar Renderer */
+  const renderTree = (nodes: SidebarNode[], depth: number = 0) => {
+    return nodes.map(node => {
+      const hasChildren = node.children && node.children.length > 0;
+      const isExpanded = expandedNodes.has(node.id);
+      const isSelected = selectedNodeId === node.id;
 
-  return (
-    <div style={{ display: "flex", height: "100%", fontFamily: "var(--font-system)" }}>
-      {/* ── Left Pane: Folder Tree ── */}
-      <div
-        className="gallery-folder-tree custom-scrollbar"
-        style={{
-          width: 200,
-          minWidth: 200,
-          height: "100%",
-          flexShrink: 0,
-        }}
-      >
-        <div
-          style={{
-            fontSize: 11,
-            fontWeight: 600,
-            color: "#888",
-            textTransform: "uppercase",
-            letterSpacing: 0.5,
-            padding: "4px 8px 8px",
-          }}
-        >
-          Folders
-        </div>
-        {FOLDER_TREE.map((node) => (
-          <FolderTreeItem
-            key={node.id}
-            node={node}
-            depth={0}
-            selectedFolder={selectedFolder}
-            expandedFolders={expandedFolders}
-            onSelect={setSelectedFolder}
-            onToggleExpand={handleToggleExpand}
-          />
-        ))}
-      </div>
-
-      {/* ── Right Pane: Thumbnails Grid ── */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}>
-        {/* Breadcrumb / Header */}
-        <div
-          style={{
-            padding: "10px 16px",
-            borderBottom: "1px solid #e0e0e0",
-            background: "rgba(248,250,255,0.8)",
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            flexShrink: 0,
-          }}
-        >
-          <span style={{ fontSize: 16 }}>🖼️</span>
-          <span style={{ fontSize: 13, fontWeight: 500, color: "#333" }}>
-            {folderLabel}
-          </span>
-          <span style={{ fontSize: 12, color: "#888", marginLeft: 8 }}>
-            {visibleItems.length} item{visibleItems.length !== 1 ? "s" : ""}
-          </span>
-        </div>
-
-        {/* Grid */}
-        {visibleItems.length > 0 ? (
-          <div className="gallery-grid custom-scrollbar" style={{ flex: 1 }}>
-            {visibleItems.map((item, index) => (
-              <Thumbnail
-                key={item.id}
-                item={item}
-                onClick={() => setSelectedImageIndex(index)}
-              />
-            ))}
-          </div>
-        ) : (
-          <div
+      return (
+        <div key={node.id}>
+          <div 
+            onClick={() => {
+              setSelectedNodeId(node.id);
+              setSelectedImageId(null);
+            }}
             style={{
-              flex: 1,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexDirection: "column",
-              gap: 8,
-              color: "#aaa",
+              display: "flex", alignItems: "center", padding: `2px 8px 2px ${8 + depth * 16}px`,
+              cursor: "pointer", fontSize: 12, color: isSelected ? "#fff" : "#333",
+              background: isSelected ? "#3399ff" : "transparent",
+              userSelect: "none"
             }}
           >
-            <span style={{ fontSize: 40 }}>📂</span>
-            <span style={{ fontSize: 14 }}>This folder is empty</span>
+            <div 
+              onClick={(e) => { 
+                if (hasChildren) {
+                  e.stopPropagation(); 
+                  toggleExpand(node.id); 
+                }
+              }}
+              style={{ width: 14, textAlign: "center", color: isSelected ? "#fff" : "#888", cursor: hasChildren ? "pointer" : "default" }}
+            >
+              {hasChildren ? (isExpanded ? "◿" : "▷") : ""}
+            </div>
+            <span style={{ margin: "0 6px", fontSize: 14, filter: isSelected ? "brightness(1.5)" : "none" }}>{node.icon}</span>
+            <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{node.label}</span>
           </div>
-        )}
+          {hasChildren && isExpanded && renderTree(node.children!, depth + 1)}
+        </div>
+      );
+    });
+  };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", height: "100%", fontFamily: "'Segoe UI', Tahoma, sans-serif", backgroundColor: "#f0f0f0", userSelect: "none" }}>
+      
+      {/* ── 1. Top Toolbar (Black Glass) ── */}
+      <div style={{
+        display: "flex", alignItems: "center", padding: "6px 12px",
+        background: "linear-gradient(180deg, #333 0%, #111 40%, #000 50%, #222 100%)",
+        borderBottom: "1px solid #000",
+        boxShadow: "inset 0 1px 1px rgba(255,255,255,0.2)",
+        color: "#fff", fontSize: 12,
+        height: 38
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 4, marginRight: 24 }}>
+          <button style={{ width: 28, height: 28, borderRadius: "50%", background: "linear-gradient(180deg, #1e58a8 0%, #0a3370 100%)", border: "1px solid #000", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>⮜</button>
+          <button style={{ width: 24, height: 24, borderRadius: "50%", background: "linear-gradient(180deg, #555 0%, #333 100%)", border: "1px solid #000", color: "#999", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>⮞</button>
+        </div>
+        
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}><span style={{ fontSize: 14 }}>📄</span> File <span style={{ fontSize: 8 }}>▼</span></div>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}><span style={{ fontSize: 14 }}>🪄</span> Fix</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}><span style={{ fontSize: 14 }}>ℹ️</span> Info</div>
+          <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.2)" }} />
+          <div style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}><span style={{ fontSize: 14 }}>🖨️</span> Print <span style={{ fontSize: 8 }}>▼</span></div>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}><span style={{ fontSize: 14 }}>✉️</span> E-mail</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}><span style={{ fontSize: 14 }}>🔥</span> Burn <span style={{ fontSize: 8 }}>▼</span></div>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}><span style={{ fontSize: 14 }}>🎬</span> Make a Movie</div>
+          <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.2)" }} />
+          <div style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}><span style={{ fontSize: 14 }}>📂</span> Open <span style={{ fontSize: 8 }}>▼</span></div>
+        </div>
       </div>
 
-      {/* ── Fullscreen Viewer Overlay ── */}
-      {isViewerOpen && (
+      {/* ── 2. Sub-Toolbar (Gray/White) ── */}
+      <div style={{
+        display: "flex", justifyContent: "flex-end", alignItems: "center", padding: "4px 12px",
+        background: "linear-gradient(180deg, #f0f4fa 0%, #dce6f4 100%)",
+        borderBottom: "1px solid #aebac8",
+        height: 32
+      }}>
+        <div style={{ 
+          display: "flex", alignItems: "center", width: 220,
+          background: "#fff", border: "1px solid #aebac8", borderRadius: 2,
+          height: 22, padding: "0 6px", boxShadow: "inset 0 1px 2px rgba(0,0,0,0.1)"
+        }}>
+          <input 
+            type="text" 
+            placeholder="Search" 
+            style={{ border: "none", outline: "none", flex: 1, fontSize: 12, fontStyle: "italic", color: "#666" }}
+          />
+          <span style={{ fontSize: 12, color: "#1e58a8" }}>🔍</span>
+        </div>
+      </div>
+
+      {/* ── 3. Main Body ── */}
+      <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
+        
+        {/* Sidebar */}
+        <div className="custom-scrollbar" style={{ width: 220, background: "#f0f0f0", borderRight: "1px solid #ccc", overflowY: "auto", padding: "8px 0" }}>
+          {renderTree(SIDEBAR_TREE)}
+        </div>
+
+        {/* Content Area */}
+        <div className="custom-scrollbar" style={{ flex: 1, background: "#fff", overflowY: "auto", padding: "20px 30px", userSelect: "none" }}>
+          
+          {groupedItems.map(([year, items]) => (
+            <div key={year} style={{ marginBottom: 40 }}>
+              
+              {/* Divider Header */}
+              <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
+                <div style={{ fontSize: 12, color: "#666", whiteSpace: "nowrap", paddingRight: 8 }}>
+                  {year} - {items.length} item{items.length !== 1 ? 's' : ''}
+                </div>
+                <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, #ccc 0%, rgba(204,204,204,0) 100%)" }} />
+              </div>
+
+              {/* Grid */}
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
+                {items.map((item) => {
+                  const isSelected = selectedImageId === item.id;
+                  return (
+                    <div 
+                      key={item.id}
+                      onClick={() => setSelectedImageId(item.id)}
+                      onDoubleClick={() => {
+                        const idx = visibleItems.findIndex(v => v.id === item.id);
+                        if (idx !== -1) setViewerIndex(idx);
+                      }}
+                      style={{
+                        padding: 4,
+                        background: isSelected ? "#cce8ff" : "transparent",
+                        border: isSelected ? "1px solid #99d1ff" : "1px solid transparent",
+                        borderRadius: 3,
+                        cursor: "pointer",
+                      }}
+                    >
+                      <div style={{
+                        width: 100, height: 75,
+                        background: item.gradient,
+                        border: "1px solid #ccc",
+                        boxShadow: "2px 2px 5px rgba(0,0,0,0.15)",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        position: "relative"
+                      }}>
+                        <span style={{ fontSize: 24, color: "rgba(255,255,255,0.3)" }}>🖼️</span>
+                        {item.folder === "promovideos" && (
+                          <div style={{ position: "absolute", inset: 0, borderTop: "4px dashed #333", borderBottom: "4px dashed #333", opacity: 0.5 }} />
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+            </div>
+          ))}
+
+          {visibleItems.length === 0 && (
+            <div style={{ textAlign: "center", marginTop: 40, color: "#999", fontSize: 13 }}>
+              There are no pictures or videos to display.
+            </div>
+          )}
+
+        </div>
+      </div>
+
+      {/* ── 4. Bottom Status & Control Bar ── */}
+      <div style={{
+        display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0 16px",
+        background: "linear-gradient(180deg, #1c3c5e 0%, #0c1d30 50%, #081421 51%, #0b1c2e 100%)",
+        borderTop: "1px solid #000",
+        boxShadow: "inset 0 1px 1px rgba(255,255,255,0.1)",
+        color: "#fff", fontSize: 11,
+        height: 48
+      }}>
+        {/* Left Status Text */}
+        <div style={{ width: 200, opacity: 0.8 }}>
+          {visibleItems.length} items{selectedImageId ? ", 1 selected" : ""}
+        </div>
+
+        {/* Center Media Controls */}
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <span style={{ fontSize: 14, cursor: "pointer", opacity: 0.8 }}>🔍 <span style={{ fontSize: 8 }}>▼</span></span>
+          <span style={{ fontSize: 16, cursor: "pointer", opacity: 0.8 }}>▦</span>
+          
+          <div style={{ width: 1, height: 20, background: "rgba(255,255,255,0.2)" }} />
+
+          <button style={{ background: "transparent", border: "none", color: "#fff", fontSize: 16, cursor: "pointer" }}>⏮</button>
+          
+          <div style={{ 
+            width: 36, height: 36, borderRadius: "50%", 
+            background: "linear-gradient(180deg, #4488ff 0%, #1155cc 100%)", 
+            border: "2px solid #aaccff", boxShadow: "0 0 8px rgba(0,0,0,0.5)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            cursor: "pointer", marginLeft: 8, marginRight: 8
+          }}>
+            <span style={{ fontSize: 18, color: "#fff", marginLeft: 2 }}>▶</span>
+          </div>
+
+          <button style={{ background: "transparent", border: "none", color: "#fff", fontSize: 16, cursor: "pointer" }}>⏭</button>
+          
+          <div style={{ width: 1, height: 20, background: "rgba(255,255,255,0.2)" }} />
+
+          <span style={{ fontSize: 16, cursor: "pointer", opacity: 0.8 }}>↺</span>
+          <span style={{ fontSize: 16, cursor: "pointer", opacity: 0.8 }}>↻</span>
+          
+          <div style={{ width: 1, height: 20, background: "rgba(255,255,255,0.2)" }} />
+          
+          <span style={{ fontSize: 14, color: "#ff4444", cursor: "pointer" }}>❌</span>
+        </div>
+
+        {/* Right Spacer */}
+        <div style={{ width: 200 }} />
+      </div>
+
+      {/* ── 5. Fullscreen Viewer ── */}
+      {viewerIndex !== null && (
         <FullscreenViewer
-          key={selectedImageIndex ?? 0}
           items={visibleItems}
-          currentIndex={selectedImageIndex!}
-          onClose={handleCloseViewer}
-          onPrev={handlePrev}
-          onNext={handleNext}
+          currentIndex={viewerIndex}
+          onClose={() => setViewerIndex(null)}
+          onPrev={() => setViewerIndex(p => p! > 0 ? p! - 1 : p)}
+          onNext={() => setViewerIndex(p => p! < visibleItems.length - 1 ? p! + 1 : p)}
         />
       )}
+
     </div>
   );
 }

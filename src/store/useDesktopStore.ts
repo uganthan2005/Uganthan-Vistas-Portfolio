@@ -114,6 +114,13 @@ export const APP_REGISTRY: Record<string, AppConfig> = {
     defaultSize: { width: 340, height: 420 },
     defaultPosition: { x: 300, y: 100 },
   },
+  mail: {
+    appType: "mail",
+    title: "Windows Mail",
+    icon: "📧",
+    defaultSize: { width: 640, height: 500 },
+    defaultPosition: { x: 150, y: 80 },
+  },
   resume: {
     appType: "resume",
     title: "My Resume",

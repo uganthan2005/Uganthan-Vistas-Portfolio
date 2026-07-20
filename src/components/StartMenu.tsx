@@ -39,7 +39,7 @@ const socialBadgeStyle: React.CSSProperties = {
 
 const QUICK_LAUNCHES: QuickLaunch[] = [
   { label: "My Projects", appType: "ie", iconPath: "/icons/Internet-explorer.png" },
-  { label: "Contact Me", appType: "aboutme", iconPath: "/icons/about.png" },
+  { label: "Contact Me", appType: "mail" },
   { label: "About Me", appType: "aboutme", iconPath: "/icons/about.png" },
   { label: "My Resume", appType: "resume", iconPath: "/icons/resume.png" },
   { label: "Media", appType: "mediaplayer", iconPath: "/icons/media-player.png" },

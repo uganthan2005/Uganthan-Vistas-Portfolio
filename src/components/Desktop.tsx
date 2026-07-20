@@ -34,6 +34,7 @@ const Minesweeper = dynamic(() => import("@/apps/Minesweeper"), {
 const MsPaint = dynamic(() => import("@/apps/MsPaint"), { ssr: false });
 const Pinball = dynamic(() => import("@/apps/Pinball"), { ssr: false });
 const Resume = dynamic(() => import("@/apps/Resume"), { ssr: false });
+const WindowsMail = dynamic(() => import("@/apps/WindowsMail"), { ssr: false });
 
 /* ═══════════════════════════════════════════
    APP COMPONENT REGISTRY
@@ -48,6 +49,7 @@ const APP_COMPONENTS: Record<string, React.ComponentType> = {
   mspaint: MsPaint,
   pinball: Pinball,
   resume: Resume,
+  mail: WindowsMail,
 };
 
 /* ═══════════════════════════════════════════
@@ -93,6 +95,11 @@ const DESKTOP_ICONS = [
     appType: "mspaint",
     label: "Paint",
     icon: <img src="/icons/paint.png" alt="Paint" width={48} height={48} />,
+  },
+  {
+    appType: "mail",
+    label: "Contact Me",
+    icon: <div style={{ fontSize: 36, width: 48, textAlign: "center" }}>📧</div>,
   },
 ];
 
