@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useCallback, useRef } from "react";
-import { Rnd } from "react-rnd";
+import React, { useCallback, useState, useEffect } from "react";
+import { motion, useAnimation } from "framer-motion";
 import { useDesktopStore, AppInstance } from "@/store/useDesktopStore";
 
 interface WindowProps {
@@ -18,12 +18,17 @@ export default function Window({ app, children }: WindowProps) {
     maximizeApp,
     restoreApp,
     updateAppPosition,
-    updateAppSize,
+    openApps,
+    isFlip3dOpen,
   } = useDesktopStore();
 
-  const rndRef = useRef<Rnd | null>(null);
   const isActive = activeAppId === app.id;
   const taskbarHeight = 44;
+  const controls = useAnimation();
+
+  // Find index for Flip 3D
+  const appIndex = openApps.findIndex((a) => a.id === app.id);
+  const totalApps = openApps.length;
 
   const handleFocus = useCallback(() => {
     if (activeAppId !== app.id) {
@@ -34,6 +39,7 @@ export default function Window({ app, children }: WindowProps) {
   const handleClose = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
+      e.preventDefault();
       closeApp(app.id);
     },
     [app.id, closeApp]
@@ -42,6 +48,7 @@ export default function Window({ app, children }: WindowProps) {
   const handleMinimize = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
+      e.preventDefault();
       minimizeApp(app.id);
     },
     [app.id, minimizeApp]
@@ -50,6 +57,7 @@ export default function Window({ app, children }: WindowProps) {
   const handleMaximize = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
+      e.preventDefault();
       if (app.isMaximized) {
         restoreApp(app.id);
       } else {
@@ -59,21 +67,42 @@ export default function Window({ app, children }: WindowProps) {
     [app.id, app.isMaximized, maximizeApp, restoreApp]
   );
 
+  // Apply Flip 3D animation
+  useEffect(() => {
+    if (isFlip3dOpen) {
+      // Calculate 3D position
+      const offset = totalApps - 1 - appIndex; // Reverse index so active is in front
+      controls.start({
+        x: `calc(50vw - ${app.size.width / 2}px - ${offset * 40}px)`,
+        y: `calc(50vh - ${app.size.height / 2}px + ${offset * 30}px)`,
+        rotateY: -25,
+        rotateX: 5,
+        scale: 0.8 - offset * 0.05,
+        z: -offset * 100,
+        opacity: 1 - offset * 0.15,
+        transition: { type: "spring", stiffness: 300, damping: 30 },
+      });
+    } else {
+      // Restore position
+      controls.start({
+        x: app.position.x,
+        y: app.position.y,
+        rotateY: 0,
+        rotateX: 0,
+        scale: 1,
+        z: 0,
+        opacity: 1,
+        transition: { type: "spring", stiffness: 500, damping: 40 },
+      });
+    }
+  }, [isFlip3dOpen, appIndex, totalApps, controls, app.position, app.size]);
+
   if (app.isMinimized) return null;
 
-  const windowStyle: React.CSSProperties = {
-    zIndex: app.zIndex,
-    animation: "windowOpen 0.2s ease",
-    borderRadius: "8px",
-    overflow: "hidden",
-    display: "flex",
-    flexDirection: "column",
-  };
-
-  if (app.isMaximized) {
+  if (app.isMaximized && !isFlip3dOpen) {
     return (
       <div
-        className={isActive ? "aero-glass-active" : "aero-glass-inactive"}
+        className={`vista-window-frame ${isActive ? "active" : ""}`}
         style={{
           position: "fixed",
           top: 0,
@@ -84,24 +113,25 @@ export default function Window({ app, children }: WindowProps) {
           display: "flex",
           flexDirection: "column",
           borderRadius: 0,
+          padding: 0, // Maximize hides the thick glass padding around the body
         }}
         onMouseDown={handleFocus}
       >
         <div
-          className={`window-titlebar ${!isActive ? "window-titlebar-inactive" : ""}`}
+          className="window-titlebar window-titlebar-drag"
           onDoubleClick={handleMaximize}
           style={{ borderRadius: 0 }}
         >
-          <span style={{ fontSize: 16, marginRight: 4 }}>{app.icon}</span>
-          <span className="window-titlebar-text">{app.title}</span>
-          <div className="window-controls">
-            <button className="window-btn" onClick={handleMinimize} title="Minimize">
+          <span style={{ fontSize: 16, marginRight: 4, zIndex: 2 }}>{app.icon}</span>
+          <span className="window-titlebar-text" style={{ zIndex: 2 }}>{app.title}</span>
+          <div className="window-controls" style={{ zIndex: 2 }}>
+            <button className="window-btn" onClick={handleMinimize} onMouseDown={handleMinimize} title="Minimize">
               ─
             </button>
-            <button className="window-btn" onClick={handleMaximize} title="Restore">
+            <button className="window-btn" onClick={handleMaximize} onMouseDown={handleMaximize} title="Restore">
               ❐
             </button>
-            <button className="window-btn window-btn-close" onClick={handleClose} title="Close">
+            <button className="window-btn window-btn-close" onClick={handleClose} onMouseDown={handleClose} title="Close">
               ✕
             </button>
           </div>
@@ -114,60 +144,79 @@ export default function Window({ app, children }: WindowProps) {
   }
 
   return (
-    <Rnd
-      ref={rndRef}
-      style={windowStyle}
-      className={isActive ? "aero-glass-active" : "aero-glass-inactive"}
-      size={app.size}
-      position={app.position}
-      minWidth={320}
-      minHeight={200}
-      dragHandleClassName="window-titlebar-drag"
-      bounds="parent"
+    <motion.div
+      initial={{ opacity: 0, scale: 0.85 }}
+      animate={controls}
+      drag={!isFlip3dOpen}
+      dragElastic={0.1}
+      dragMomentum={false}
       onDragStart={handleFocus}
-      onDragStop={(_e, d) => {
-        updateAppPosition(app.id, { x: d.x, y: d.y });
-      }}
-      onResizeStop={(_e, _dir, ref, _delta, position) => {
-        updateAppSize(app.id, {
-          width: parseInt(ref.style.width),
-          height: parseInt(ref.style.height),
+      onDragEnd={(_e, info) => {
+        // Update the store with the new position after dragging
+        updateAppPosition(app.id, {
+          x: app.position.x + info.offset.x,
+          y: app.position.y + info.offset.y,
         });
-        updateAppPosition(app.id, position);
       }}
-      onMouseDown={handleFocus}
-      enableResizing={{
-        top: true,
-        right: true,
-        bottom: true,
-        left: true,
-        topRight: true,
-        bottomRight: true,
-        bottomLeft: true,
-        topLeft: true,
+      className={`vista-window-frame ${isActive && !isFlip3dOpen ? "active" : ""}`}
+      style={{
+        position: "absolute",
+        width: app.size.width,
+        height: app.size.height,
+        zIndex: app.zIndex,
+        display: "flex",
+        flexDirection: "column",
+        transformStyle: "preserve-3d",
+        perspective: 1200,
+        pointerEvents: isFlip3dOpen && !isActive ? "none" : "auto",
+        cursor: isFlip3dOpen ? "pointer" : "default",
+      }}
+      onMouseDown={() => {
+        handleFocus();
+        if (isFlip3dOpen && isActive) {
+          useDesktopStore.getState().toggleFlip3d();
+        }
       }}
     >
       <div
-        className={`window-titlebar window-titlebar-drag ${!isActive ? "window-titlebar-inactive" : ""}`}
+        className="window-titlebar window-titlebar-drag"
         onDoubleClick={handleMaximize}
+        style={{ cursor: isFlip3dOpen ? "pointer" : "grab" }}
       >
-        <span style={{ fontSize: 16, marginRight: 4 }}>{app.icon}</span>
-        <span className="window-titlebar-text">{app.title}</span>
-        <div className="window-controls no-drag">
-          <button className="window-btn" onClick={handleMinimize} title="Minimize">
-            ─
+        <span style={{ fontSize: 16, marginRight: 4, zIndex: 2 }}>{app.icon}</span>
+        <span className="window-titlebar-text" style={{ zIndex: 2 }}>{app.title}</span>
+        <div className="window-controls no-drag" style={{ pointerEvents: isFlip3dOpen ? "none" : "auto", zIndex: 2 }}>
+          <button className="window-btn" onClick={handleMinimize} onMouseDown={handleMinimize} title="Minimize">
+            _
           </button>
-          <button className="window-btn" onClick={handleMaximize} title="Maximize">
+          <button className="window-btn" onClick={handleMaximize} onMouseDown={handleMaximize} title="Maximize">
             □
           </button>
-          <button className="window-btn window-btn-close" onClick={handleClose} title="Close">
+          <button className="window-btn window-btn-close" onClick={handleClose} onMouseDown={handleClose} title="Close">
             ✕
           </button>
         </div>
       </div>
-      <div className="window-body" style={{ height: "calc(100% - 32px)" }}>
+      <div className="window-body" style={{ flex: 1, pointerEvents: isFlip3dOpen ? "none" : "auto" }}>
         {children}
       </div>
-    </Rnd>
+      
+      {/* Basic Resize Handle */}
+      {!isFlip3dOpen && (
+        <div 
+          style={{
+            position: "absolute",
+            bottom: 0,
+            right: 0,
+            width: 15,
+            height: 15,
+            cursor: "nwse-resize",
+            zIndex: 10,
+          }}
+          // Basic resizing could be implemented here, but we rely on fixed size for now 
+          // to keep the framer-motion implementation simple and focused on drag & Flip3D
+        />
+      )}
+    </motion.div>
   );
 }

@@ -675,7 +675,7 @@ export default function PhotoGallery() {
       {/* ── Fullscreen Viewer Overlay ── */}
       {isViewerOpen && (
         <FullscreenViewer
-          key={selectedImageIndex ?? currentIndex}
+          key={selectedImageIndex ?? 0}
           items={visibleItems}
           currentIndex={selectedImageIndex!}
           onClose={handleCloseViewer}

@@ -33,6 +33,7 @@ export default function Taskbar({
     minimizeApp,
     toggleStartMenu,
     isStartMenuOpen,
+    toggleFlip3d,
   } = useDesktopStore();
 
   const [time, setTime] = useState("");
@@ -68,6 +69,7 @@ export default function Taskbar({
 
     if (app.isMinimized) {
       restoreApp(id);
+      focusApp(id);
     } else if (activeAppId === id) {
       minimizeApp(id);
     } else {
@@ -126,6 +128,16 @@ export default function Taskbar({
         title="Start"
       >
         <img src="/icons/Start-icon.png" alt="Start" width={22} height={22} />
+      </button>
+
+      {/* Quick Launch - Flip 3D */}
+      <button
+        className="taskbar-app-btn"
+        style={{ padding: "0 8px", marginLeft: 70 }}
+        onClick={toggleFlip3d}
+        title="Windows Flip 3D (Meta + Tab)"
+      >
+        <span style={{ fontSize: 16 }}>◩</span>
       </button>
 
       {/* Open App Buttons */}

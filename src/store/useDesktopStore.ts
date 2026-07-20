@@ -31,6 +31,7 @@ export interface DesktopState {
   highestZIndex: number;
   securityModal: SecurityModalState;
   isStartMenuOpen: boolean;
+  isFlip3dOpen: boolean;
   hasBooted: boolean;
 
   // Actions
@@ -47,6 +48,8 @@ export interface DesktopState {
   hideSecurityModal: () => void;
   toggleStartMenu: () => void;
   closeStartMenu: () => void;
+  toggleFlip3d: () => void;
+  closeFlip3d: () => void;
   setBoot: () => void;
   resetSession: () => void;
 }
@@ -155,6 +158,7 @@ export const useDesktopStore = create<DesktopState>((set, get) => ({
     downloadFilename: "",
   },
   isStartMenuOpen: false,
+  isFlip3dOpen: false,
   hasBooted: false,
 
   openApp: (appType: string) => {
@@ -332,11 +336,19 @@ export const useDesktopStore = create<DesktopState>((set, get) => ({
   },
 
   toggleStartMenu: () => {
-    set((state) => ({ isStartMenuOpen: !state.isStartMenuOpen }));
+    set((state) => ({ isStartMenuOpen: !state.isStartMenuOpen, isFlip3dOpen: false }));
   },
 
   closeStartMenu: () => {
     set({ isStartMenuOpen: false });
+  },
+
+  toggleFlip3d: () => {
+    set((state) => ({ isFlip3dOpen: !state.isFlip3dOpen, isStartMenuOpen: false }));
+  },
+
+  closeFlip3d: () => {
+    set({ isFlip3dOpen: false });
   },
 
   setBoot: () => {
@@ -356,6 +368,7 @@ export const useDesktopStore = create<DesktopState>((set, get) => ({
         downloadFilename: "",
       },
       isStartMenuOpen: false,
+      isFlip3dOpen: false,
       hasBooted: false,
     }),
 }));

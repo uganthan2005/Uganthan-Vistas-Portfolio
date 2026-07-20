@@ -16,28 +16,17 @@
 :root {
   --font-system: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 
-  /* Aero Glass Tokens */
-  --glass-bg: rgba(220, 235, 255, 0.42);
-  --glass-bg-active: rgba(185, 215, 255, 0.55);
-  --glass-border: rgba(255, 255, 255, 0.45);
-  --glass-border-inactive: rgba(255, 255, 255, 0.25);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.5);
-  --glass-shadow-inactive: 0 4px 16px rgba(0, 0, 0, 0.1);
-  --glass-blur: 18px;
-
-  /* Title Bar Gradients */
-  --titlebar-active: linear-gradient(180deg,
-    rgba(120, 170, 240, 0.95) 0%,
-    rgba(75, 130, 210, 0.9) 40%,
-    rgba(55, 110, 195, 0.88) 60%,
-    rgba(90, 150, 225, 0.92) 100%);
-  --titlebar-inactive: linear-gradient(180deg,
-    rgba(180, 195, 215, 0.8) 0%,
-    rgba(160, 175, 195, 0.75) 100%);
+  /* Vista Aero Glass Tokens */
+  --vista-glass: rgba(180, 200, 220, 0.4);
+  --vista-glass-active: rgba(140, 180, 220, 0.55);
+  --vista-border-light: rgba(255, 255, 255, 0.8);
+  --vista-border-dark: rgba(0, 0, 0, 0.4);
+  --vista-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 0 2px rgba(255, 255, 255, 0.9), inset 0 1px 1px rgba(255, 255, 255, 1);
+  --vista-blur: 20px;
 
   /* Taskbar */
-  --taskbar-bg: rgba(20, 30, 55, 0.82);
-  --taskbar-height: 44px;
+  --taskbar-bg: rgba(0, 0, 0, 0.45);
+  --taskbar-height: 40px;
 
   /* Colors */
   --accent-blue: #3b82f6;
@@ -110,65 +99,48 @@ html, body {
 }
 
 /* ═══════════════════════════════════════════
-   AERO GLASS COMPONENTS
+   VISTA GLASS COMPONENTS
    ═══════════════════════════════════════════ */
 
-.aero-glass {
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
-}
-
-.aero-glass-active {
-  background: var(--glass-bg-active);
-  backdrop-filter: blur(calc(var(--glass-blur) + 4px));
-  -webkit-backdrop-filter: blur(calc(var(--glass-blur) + 4px));
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
-}
-
-.aero-glass-inactive {
-  background: rgba(200, 210, 225, 0.35);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border-inactive);
-  box-shadow: var(--glass-shadow-inactive);
-}
-
-/* ── Window Title Bar ── */
-.window-titlebar {
-  background: var(--titlebar-active);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-  padding: 0 4px;
-  display: flex;
-  align-items: center;
-  height: 32px;
-  border-radius: 8px 8px 0 0;
+.vista-window-frame {
+  background: var(--vista-glass);
+  backdrop-filter: blur(var(--vista-blur)) saturate(150%);
+  -webkit-backdrop-filter: blur(var(--vista-blur)) saturate(150%);
+  border: 1px solid var(--vista-border-light);
+  box-shadow: 0 0 0 1px var(--vista-border-dark), var(--vista-shadow);
+  padding: 6px 6px 8px 6px; /* Thick glass borders */
+  border-radius: 8px;
   position: relative;
 }
 
-.window-titlebar::after {
+.vista-window-frame::before {
   content: '';
   position: absolute;
-  top: 1px;
-  left: 8px;
-  right: 8px;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.35);
-  border-radius: 1px;
+  top: 0; left: 0; right: 0; height: 30px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.1) 100%);
+  border-radius: 8px 8px 0 0;
+  pointer-events: none;
 }
 
-.window-titlebar-inactive {
-  background: var(--titlebar-inactive);
+.vista-window-frame.active {
+  background: var(--vista-glass-active);
+  box-shadow: 0 0 0 1px var(--vista-border-dark), 0 0 12px rgba(255, 255, 255, 0.5), var(--vista-shadow);
+}
+
+.window-titlebar {
+  display: flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 2px;
+  position: relative;
+  z-index: 1;
 }
 
 .window-titlebar-text {
   font-size: 13px;
-  font-weight: 400;
-  color: white;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  font-weight: 500;
+  color: black;
+  text-shadow: 0 0 4px white, 0 0 8px white, 0 0 12px white;
   flex: 1;
   padding-left: 6px;
   white-space: nowrap;
@@ -180,48 +152,51 @@ html, body {
 .window-controls {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 1px;
   margin-left: auto;
-  padding-right: 2px;
 }
 
 .window-btn {
-  width: 28px;
+  width: 26px;
   height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 3px;
-  border: none;
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  font-size: 11px;
+  border: 1px solid rgba(255,255,255,0.4);
+  background: linear-gradient(180deg, rgba(200,220,240,0.8) 0%, rgba(150,180,220,0.8) 100%);
+  color: #111;
+  font-size: 10px;
   cursor: pointer;
-  transition: all 0.12s ease;
-  position: relative;
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+  transition: all 0.1s;
+  box-shadow: inset 0 1px 2px rgba(255,255,255,0.9);
 }
 
 .window-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: linear-gradient(180deg, rgba(220,240,255,0.9) 0%, rgba(180,210,255,0.9) 100%);
+  box-shadow: 0 0 4px rgba(255,255,255,0.8), inset 0 1px 2px rgba(255,255,255,0.9);
 }
 
 .window-btn-close {
-  background: rgba(200, 50, 30, 0.6);
+  background: linear-gradient(180deg, #e47568 0%, #c42b1c 100%);
+  color: white;
+  border-color: #7a150c;
 }
 
 .window-btn-close:hover {
-  background: var(--vista-close-hover);
+  background: linear-gradient(180deg, #f59588 0%, #e81123 100%);
+  box-shadow: 0 0 8px rgba(255,50,50,0.8);
 }
 
 /* ── Window Body ── */
 .window-body {
-  background: rgba(240, 245, 255, 0.92);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: white;
   flex: 1;
   overflow: hidden;
-  border-radius: 0 0 6px 6px;
+  border: 1px solid rgba(0,0,0,0.4);
+  border-radius: 0; /* Content is square inside the glass frame */
+  position: relative;
+  z-index: 1;
 }
 
 /* ═══════════════════════════════════════════
@@ -235,56 +210,57 @@ html, body {
   right: 0;
   height: var(--taskbar-height);
   background: var(--taskbar-bg);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border-top: 1px solid rgba(120, 160, 220, 0.3);
+  backdrop-filter: blur(24px) saturate(120%);
+  -webkit-backdrop-filter: blur(24px) saturate(120%);
+  border-top: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
   display: flex;
   align-items: center;
-  padding: 0 4px;
+  padding: 0;
   z-index: 9000;
+}
+
+.taskbar::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%);
+  pointer-events: none;
 }
 
 /* ── Start Button ── */
 .start-btn {
-  width: 54px;
-  height: 36px;
-  border-radius: 18px 4px 4px 18px;
-  background: linear-gradient(180deg,
-    #3ba33b 0%,
-    #2d8e2d 40%,
-    #1e7a1e 100%);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #5af 0%, #17a 60%, #036 100%);
+  border: 2px solid rgba(255, 255, 255, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.15s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  position: relative;
-  overflow: hidden;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.5), inset 0 -4px 10px rgba(0, 200, 255, 0.8);
+  position: absolute;
+  left: 10px;
+  bottom: -4px; /* Protrudes above and below taskbar */
+  z-index: 9999;
 }
 
 .start-btn::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 50%;
-  background: linear-gradient(180deg,
-    rgba(255, 255, 255, 0.25) 0%,
-    rgba(255, 255, 255, 0.05) 100%);
-  border-radius: 18px 4px 0 0;
+  top: 2px;
+  left: 10px;
+  right: 10px;
+  height: 16px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%);
+  border-radius: 50%;
 }
 
 .start-btn:hover {
-  background: linear-gradient(180deg,
-    #4abb4a 0%,
-    #39a339 40%,
-    #2a8f2a 100%);
-  box-shadow: 0 1px 6px rgba(80, 200, 80, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  background: radial-gradient(circle at 30% 30%, #7cf 0%, #29c 60%, #058 100%);
+  box-shadow: 0 0 15px rgba(100, 200, 255, 0.8), inset 0 -4px 15px rgba(150, 255, 255, 0.9);
 }
 
 .start-btn:active {

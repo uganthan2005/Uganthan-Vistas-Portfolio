@@ -3,6 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import React from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useDesktopStore, APP_REGISTRY } from "@/store/useDesktopStore";
 
 interface StartMenuProps {
@@ -75,8 +76,6 @@ export default function StartMenu({ onLogOff, onShutDown }: StartMenuProps) {
   const { isStartMenuOpen, openApp, closeStartMenu, openApps } = useDesktopStore();
   const showSecurityModal = useDesktopStore((s) => s.showSecurityModal);
 
-  if (!isStartMenuOpen) return null;
-
   const recentApps = Array.from(
     new Map(
       openApps
@@ -92,195 +91,254 @@ export default function StartMenu({ onLogOff, onShutDown }: StartMenuProps) {
   };
 
   return (
-    <>
-      <div
-        style={{
-          position: "fixed",
-          inset: 0,
-          zIndex: 9400,
-        }}
-        onClick={closeStartMenu}
-      />
+    <AnimatePresence>
+      {isStartMenuOpen && (
+        <>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            style={{
+              position: "fixed",
+              inset: 0,
+              zIndex: 9400,
+            }}
+            onClick={closeStartMenu}
+          />
 
-      <div
-        className="start-menu"
-        style={{
-          width: 720,
-          display: "grid",
-          gridTemplateColumns: "220px 1fr",
-          minHeight: 540,
-          borderRadius: 18,
-        }}
-      >
-        <div
-          style={{
-            background: "linear-gradient(180deg, rgba(20,33,58,0.96) 0%, rgba(10,14,26,0.98) 100%)",
-            borderRight: "1px solid rgba(255,255,255,0.08)",
-            padding: 18,
-            display: "flex",
-            flexDirection: "column",
-            gap: 16,
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            <div
-              style={{
-                width: 72,
-                height: 72,
-                borderRadius: 20,
-                background: "linear-gradient(135deg, rgba(81,137,213,0.95), rgba(34,88,168,0.95))",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "white",
-                fontSize: 28,
-                fontWeight: 700,
-                boxShadow: "0 10px 24px rgba(0,0,0,0.25)",
-              }}
-            >
-              U
-            </div>
-            <div>
-              <div style={{ color: "white", fontSize: 17, fontWeight: 700 }}>Uganthan M</div>
-              <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginTop: 4 }}>
-                Visual Designer
-              </div>
-            </div>
-          </div>
-
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            <SectionLabel text="Social Profile" />
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-              {SOCIAL_LINKS.map((link) => (
-                <button
-                  key={link.label}
-                  onClick={() => showSecurityModal(link.href)}
-                  title={link.label}
-                  style={{
-                    width: 46,
-                    height: 46,
-                    borderRadius: 14,
-                    border: "1px solid rgba(255,255,255,0.1)",
-                    background: "rgba(255,255,255,0.08)",
-                    cursor: "pointer",
-                    color: "white",
+          <motion.div
+            initial={{ y: 30, opacity: 0, scale: 0.95 }}
+            animate={{ y: 0, opacity: 1, scale: 1 }}
+            exit={{ y: 20, opacity: 0, scale: 0.98 }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            className="vista-window-frame"
+            style={{
+              position: "fixed",
+              bottom: 44,
+              left: 0,
+              width: 380,
+              height: 480,
+              zIndex: 9998, /* Just under start button */
+              display: "flex",
+              padding: "4px", /* Glass border thickness */
+              borderBottomLeftRadius: 0,
+            }}
+          >
+            <div style={{
+              flex: 1,
+              display: "flex",
+              borderRadius: "4px",
+              overflow: "hidden",
+              border: "1px solid rgba(0,0,0,0.5)",
+              background: "white",
+              position: "relative",
+            }}>
+              {/* Left Pane (White) */}
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "white", padding: "8px" }}>
+                <div style={{ flex: 1, overflowY: "auto" }}>
+                  {QUICK_LAUNCHES.map((item) => {
+                    const app = APP_REGISTRY[item.appType];
+                    return (
+                      <button 
+                        key={item.label} 
+                        onClick={() => handleLaunch(item.appType)}
+                        style={{
+                          width: "100%",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 12,
+                          padding: "8px",
+                          border: "none",
+                          background: "transparent",
+                          cursor: "pointer",
+                          borderRadius: 4,
+                          textAlign: "left",
+                        }}
+                        onMouseOver={(e) => e.currentTarget.style.background = "rgba(50, 150, 255, 0.15)"}
+                        onMouseOut={(e) => e.currentTarget.style.background = "transparent"}
+                      >
+                        {item.iconPath ? (
+                          <img src={item.iconPath} alt={item.label} width={32} height={32} />
+                        ) : (
+                          <span style={{ fontSize: 24, width: 32, textAlign: "center" }}>{app?.icon ?? "⬛"}</span>
+                        )}
+                        <div>
+                          <div style={{ color: "#222", fontSize: 13, fontWeight: 500 }}>{item.label}</div>
+                          <div style={{ color: "#666", fontSize: 11 }}>{app?.title ?? item.label}</div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                  <hr style={{ margin: "8px 0", borderTop: "1px solid #ddd" }} />
+                  {recentApps.map((app) => {
+                    const registryEntry = APP_REGISTRY[app.appType];
+                    return (
+                      <button 
+                        key={app.id} 
+                        onClick={() => handleLaunch(app.appType)}
+                        style={{
+                          width: "100%",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 12,
+                          padding: "8px",
+                          border: "none",
+                          background: "transparent",
+                          cursor: "pointer",
+                          borderRadius: 4,
+                          textAlign: "left",
+                        }}
+                        onMouseOver={(e) => e.currentTarget.style.background = "rgba(50, 150, 255, 0.15)"}
+                        onMouseOut={(e) => e.currentTarget.style.background = "transparent"}
+                      >
+                        {registryEntry?.iconPath ? (
+                          <img src={registryEntry.iconPath} alt={registryEntry.title} width={32} height={32} />
+                        ) : (
+                          <span style={{ fontSize: 24, width: 32, textAlign: "center" }}>{app.icon}</span>
+                        )}
+                        <div>
+                          <div style={{ color: "#222", fontSize: 13, fontWeight: 500 }}>{registryEntry?.title ?? app.title}</div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+                {/* Search Bar Area */}
+                <div style={{ padding: "8px 0 0 0", borderTop: "1px solid #ddd" }}>
+                  <div style={{
+                    background: "rgba(0,0,0,0.05)",
+                    border: "1px solid rgba(0,0,0,0.2)",
+                    borderRadius: 12,
+                    padding: "4px 12px",
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "center",
-                    boxShadow: "0 8px 20px rgba(0,0,0,0.22)",
-                  }}
-                >
-                  {link.icon}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div style={{ marginTop: "auto", display: "flex", flexDirection: "column", gap: 10 }}>
-            <SectionLabel text="Session" />
-            <button className="start-menu-action" onClick={onLogOff}>
-              <span>⇢</span>
-              <span>Log off</span>
-            </button>
-            <button className="start-menu-action danger" onClick={onShutDown}>
-              <span>⏻</span>
-              <span>Shut down</span>
-            </button>
-          </div>
-        </div>
-
-        <div
-          style={{
-            background: "rgba(25, 33, 52, 0.92)",
-            display: "flex",
-            flexDirection: "column",
-            minWidth: 0,
-          }}
-        >
-          <div style={{ padding: 18, borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
-            <div style={{ color: "white", fontSize: 18, fontWeight: 700 }}>Welcome back</div>
-            <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 12, marginTop: 4 }}>
-              Launch your projects, profile tools, and creative apps from here.
-            </div>
-          </div>
-
-          <div style={{ padding: 18, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18, overflow: "auto" }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              <SectionLabel text="Pinned" />
-              {QUICK_LAUNCHES.map((item) => {
-                const app = APP_REGISTRY[item.appType];
-                return (
-                  <button key={item.label} className="start-menu-item start-menu-card" onClick={() => handleLaunch(item.appType)}>
-                    {item.iconPath ? (
-                      <img src={item.iconPath} alt={item.label} width={28} height={28} style={{ borderRadius: 6 }} />
-                    ) : (
-                      <span style={{ width: 28, textAlign: "center", fontSize: 20 }}>{app?.icon ?? "⬛"}</span>
-                    )}
-                    <div style={{ minWidth: 0, textAlign: "left" }}>
-                      <div style={{ color: "white", fontSize: 13, fontWeight: 600 }}>{item.label}</div>
-                      <div style={{ color: "rgba(255,255,255,0.62)", fontSize: 11, marginTop: 2 }}>
-                        {app?.title ?? item.label}
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              <SectionLabel text="Recently used" />
-              {recentApps.length > 0 ? (
-                recentApps.map((app) => {
-                  const registryEntry = APP_REGISTRY[app.appType];
-                  return (
-                    <button key={app.id} className="start-menu-item start-menu-card" onClick={() => handleLaunch(app.appType)}>
-                      {registryEntry?.iconPath ? (
-                        <img src={registryEntry.iconPath} alt={registryEntry.title} width={28} height={28} style={{ borderRadius: 6 }} />
-                      ) : (
-                        <span style={{ width: 28, textAlign: "center", fontSize: 20 }}>{app.icon}</span>
-                      )}
-                      <div style={{ minWidth: 0, textAlign: "left" }}>
-                        <div style={{ color: "white", fontSize: 13, fontWeight: 600 }}>{registryEntry?.title ?? app.title}</div>
-                        <div style={{ color: "rgba(255,255,255,0.62)", fontSize: 11, marginTop: 2 }}>
-                          {app.isMinimized ? "Minimized" : "Open"}
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })
-              ) : (
-                <div
-                  style={{
-                    padding: 16,
-                    borderRadius: 14,
-                    background: "rgba(255,255,255,0.06)",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                    color: "rgba(255,255,255,0.72)",
-                    fontSize: 12,
-                  }}
-                >
-                  Recently used apps will appear here.
-                </div>
-              )}
-
-              <SectionLabel text="Other" />
-              <button className="start-menu-item start-menu-card" onClick={() => handleLaunch("cmd")}>
-                <span style={{ width: 28, textAlign: "center", fontSize: 18 }}>⌘</span>
-                <div>
-                  <div style={{ color: "white", fontSize: 13, fontWeight: 600 }}>Computer</div>
-                  <div style={{ color: "rgba(255,255,255,0.62)", fontSize: 11, marginTop: 2 }}>
-                    System tools and command prompt
+                  }}>
+                    <input 
+                      type="text" 
+                      placeholder="Start Search" 
+                      style={{ border: "none", background: "transparent", width: "100%", outline: "none", fontStyle: "italic", color: "#333" }} 
+                    />
+                    <span style={{ opacity: 0.5 }}>🔍</span>
                   </div>
                 </div>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
-  );
-}
+              </div>
 
-function SectionLabel({ text }: { text: string }) {
-  return <div style={{ color: "rgba(255,255,255,0.58)", fontSize: 11, letterSpacing: 1.1, textTransform: "uppercase" }}>{text}</div>;
+              {/* Right Pane (Dark Glass) */}
+              <div style={{
+                width: 140,
+                background: "rgba(10, 20, 35, 0.8)",
+                backdropFilter: "blur(10px)",
+                borderLeft: "1px solid rgba(255,255,255,0.1)",
+                display: "flex",
+                flexDirection: "column",
+                padding: "40px 10px 10px 10px", /* Leave room for user picture */
+              }}>
+                <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+                  {SOCIAL_LINKS.map((link) => (
+                    <button
+                      key={link.label}
+                      onClick={() => showSecurityModal(link.href)}
+                      style={{
+                        textAlign: "left",
+                        background: "transparent",
+                        border: "none",
+                        color: "white",
+                        padding: "6px",
+                        fontSize: 12,
+                        cursor: "pointer",
+                        borderRadius: 4,
+                        fontWeight: 500,
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.background = "rgba(255, 255, 255, 0.2)";
+                        e.currentTarget.style.textShadow = "0 0 5px white";
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.background = "transparent";
+                        e.currentTarget.style.textShadow = "none";
+                      }}
+                    >
+                      {link.label}
+                    </button>
+                  ))}
+                  <hr style={{ borderTop: "1px solid rgba(255,255,255,0.1)", margin: "8px 0" }} />
+                  <button
+                    onClick={() => handleLaunch("cmd")}
+                    style={{
+                      textAlign: "left",
+                      background: "transparent",
+                      border: "none",
+                      color: "white",
+                      padding: "6px",
+                      fontSize: 12,
+                      cursor: "pointer",
+                      borderRadius: 4,
+                      fontWeight: 500,
+                    }}
+                    onMouseOver={(e) => e.currentTarget.style.background = "rgba(255, 255, 255, 0.2)"}
+                    onMouseOut={(e) => e.currentTarget.style.background = "transparent"}
+                  >
+                    Control Panel
+                  </button>
+                  <button
+                    onClick={() => handleLaunch("cmd")}
+                    style={{
+                      textAlign: "left",
+                      background: "transparent",
+                      border: "none",
+                      color: "white",
+                      padding: "6px",
+                      fontSize: 12,
+                      cursor: "pointer",
+                      borderRadius: 4,
+                      fontWeight: 500,
+                    }}
+                    onMouseOver={(e) => e.currentTarget.style.background = "rgba(255, 255, 255, 0.2)"}
+                    onMouseOut={(e) => e.currentTarget.style.background = "transparent"}
+                  >
+                    Computer
+                  </button>
+                </div>
+
+                {/* Session Buttons */}
+                <div style={{ display: "flex", gap: 4, marginTop: "auto", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 8 }}>
+                   <button 
+                     onClick={onLogOff}
+                     style={{ flex: 1, padding: "4px", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 4, color: "white", cursor: "pointer", fontSize: 11 }}
+                   >Log Off</button>
+                   <button 
+                     onClick={onShutDown}
+                     style={{ flex: 1, padding: "4px", background: "rgba(200,50,50,0.6)", border: "1px solid rgba(255,50,50,0.4)", borderRadius: 4, color: "white", cursor: "pointer", fontSize: 11 }}
+                   >Lock</button>
+                </div>
+              </div>
+            </div>
+
+            {/* User Picture Overlay */}
+            <div style={{
+              position: "absolute",
+              top: -24,
+              right: 28,
+              width: 54,
+              height: 54,
+              borderRadius: 6,
+              background: "linear-gradient(135deg, rgba(81,137,213,1), rgba(34,88,168,1))",
+              border: "2px solid rgba(255,255,255,0.9)",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.8)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "white",
+              fontSize: 24,
+              fontWeight: 700,
+              zIndex: 10,
+            }}>
+              U
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  );
 }

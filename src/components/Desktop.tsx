@@ -32,6 +32,7 @@ const Minesweeper = dynamic(() => import("@/apps/Minesweeper"), {
   ssr: false,
 });
 const MsPaint = dynamic(() => import("@/apps/MsPaint"), { ssr: false });
+const Pinball = dynamic(() => import("@/apps/Pinball"), { ssr: false });
 const Resume = dynamic(() => import("@/apps/Resume"), { ssr: false });
 
 /* ═══════════════════════════════════════════
@@ -45,6 +46,7 @@ const APP_COMPONENTS: Record<string, React.ComponentType> = {
   mediaplayer: MediaPlayer,
   minesweeper: Minesweeper,
   mspaint: MsPaint,
+  pinball: Pinball,
   resume: Resume,
 };
 
