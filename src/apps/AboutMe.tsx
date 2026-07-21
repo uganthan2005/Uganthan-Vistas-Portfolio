@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import OsLink from "@/components/OsLink";
 import Rover from "@/components/Rover";
 
@@ -209,14 +210,13 @@ export default function AboutMe() {
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
             <div style={{
               width: 56, height: 56,
-              background: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
               borderRadius: "4px",
               border: "2px solid rgba(255,255,255,0.8)",
               boxShadow: "0 2px 8px rgba(0,0,0,0.4)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 28, fontWeight: "bold"
+              position: "relative",
+              overflow: "hidden"
             }}>
-              U
+              <Image src="/profile-picture.jpg" alt="Uganthan" fill className="object-cover" />
             </div>
             <span style={{ fontSize: 13, fontWeight: 500, textShadow: "0 1px 2px rgba(0,0,0,0.5)" }}>Uganthan</span>
           </div>

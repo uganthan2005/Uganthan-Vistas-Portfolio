@@ -8,8 +8,9 @@ import { useDesktopStore } from "@/store/useDesktopStore";
 import Window from "@/components/Window";
 import Taskbar from "@/components/Taskbar";
 import DesktopIcon from "@/components/DesktopIcon";
-import Sidebar from "@/components/Sidebar";
+
 import SecurityModal from "@/components/SecurityModal";
+import AeroDialog from "@/components/AeroDialog";
 import StartMenu from "@/components/StartMenu";
 
 /* Dynamic imports for apps to reduce initial bundle */
@@ -169,7 +170,7 @@ function LoginScreen({ onContinue }: { onContinue: () => void }) {
               U
             </div>
             <div style={{ fontSize: 28, fontWeight: 700, letterSpacing: 0.5 }}>uganthan_m</div>
-            <div style={{ fontSize: 13, opacity: 0.88, marginTop: 4 }}>Visual Designer</div>
+            <div style={{ fontSize: 13, opacity: 0.88, marginTop: 4 }}>Student, AI engineer, Software developer, Graphic designer</div>
             <div style={{ fontSize: 14, opacity: 0.82, marginTop: 22 }}>To begin, click uganthan_m to log in</div>
           </button>
         </div>
@@ -348,7 +349,7 @@ type DesktopProps = {
 export default function Desktop({ wallpaperVersion }: DesktopProps) {
   const { openApps, hasBooted, setBoot, resetSession, closeStartMenu } = useDesktopStore();
   const [hasLoggedIn, setHasLoggedIn] = useState(false);
-  const [showSidebar, setShowSidebar] = useState(true);
+
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showFullscreenPrompt, setShowFullscreenPrompt] = useState(false);
   const [hasDismissedFullscreenPrompt, setHasDismissedFullscreenPrompt] =
@@ -385,11 +386,11 @@ export default function Desktop({ wallpaperVersion }: DesktopProps) {
     setShowFullscreenPrompt(false);
   }, []);
 
+  const setSessionState = useDesktopStore((s) => s.setSessionState);
+  const sessionState = useDesktopStore((s) => s.sessionState);
+
   const handleLogOff = useCallback(() => {
-    resetSession();
-    setHasLoggedIn(false);
     setShowNotificationCenter(false);
-    setShowSidebar(true);
     setIsFullscreen(false);
     setIsCrtEnabled(true);
     setHasDismissedFullscreenPrompt(false);
@@ -397,13 +398,19 @@ export default function Desktop({ wallpaperVersion }: DesktopProps) {
     if (document.fullscreenElement) {
       void document.exitFullscreen();
     }
-  }, [resetSession]);
+    
+    // Play shutdown sound
+    const audio = new Audio("/sounds/winxpshutdown.mp3");
+    audio.play().catch(() => {});
+    
+    setSessionState("logging_out");
+  }, [setSessionState]);
 
   const handleShutDown = useCallback(() => {
     resetSession();
     setHasLoggedIn(false);
     setShowNotificationCenter(false);
-    setShowSidebar(true);
+
     setIsFullscreen(false);
     setIsCrtEnabled(true);
     setHasDismissedFullscreenPrompt(false);
@@ -453,7 +460,7 @@ export default function Desktop({ wallpaperVersion }: DesktopProps) {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "F9") {
         e.preventDefault();
-        setShowSidebar((s) => !s);
+
       }
 
       if (e.key === "F11") {
@@ -486,15 +493,12 @@ export default function Desktop({ wallpaperVersion }: DesktopProps) {
   }, [hasBooted, isFullscreen, hasDismissedFullscreenPrompt]);
 
   const shouldShowFullscreenPrompt =
-    hasBooted && !isFullscreen && !hasDismissedFullscreenPrompt && showFullscreenPrompt;
+    !isFullscreen && !hasDismissedFullscreenPrompt && showFullscreenPrompt;
 
-  if (!hasLoggedIn) {
-    return <LoginScreen onContinue={handleUserLogin} />;
-  }
-
-  if (!hasBooted) {
-    return <BootScreen onBoot={handleBoot} />;
-  }
+  // We rely on the external StartupSequence now
+  useEffect(() => {
+    if (!hasBooted) setBoot();
+  }, [hasBooted, setBoot]);
 
   return (
     <div
@@ -523,7 +527,7 @@ export default function Desktop({ wallpaperVersion }: DesktopProps) {
           position: "absolute",
           top: 0,
           left: 0,
-          right: showSidebar ? 280 : 0,
+          right: 0,
           bottom: 44,
           transition: "right 0.3s ease",
         }}
@@ -565,84 +569,40 @@ export default function Desktop({ wallpaperVersion }: DesktopProps) {
         })}
       </div>
 
-      {/* Sidebar */}
-      {showSidebar && <Sidebar />}
+
 
       {/* Fullscreen prompt */}
       {shouldShowFullscreenPrompt && (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 9500,
-            background: "rgba(0, 0, 0, 0.55)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: 24,
-          }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div
-            className="aero-glass"
-            style={{
-              width: "min(480px, 100%)",
-              borderRadius: 18,
-              padding: 24,
-              color: "white",
-              background: "rgba(18, 28, 45, 0.82)",
-              boxShadow: "0 24px 80px rgba(0,0,0,0.45)",
-            }}
-          >
-            <div style={{ fontSize: 24, fontWeight: 600, marginBottom: 10 }}>
-              Fullscreen mode recommended
-            </div>
-            <div style={{ fontSize: 14, lineHeight: 1.5, opacity: 0.88 }}>
-              For the best retro desktop experience, switch to fullscreen.
-              You can also press F11 at any time to enter or exit fullscreen.
-            </div>
-            <div
-              style={{
-                display: "flex",
-                gap: 10,
-                justifyContent: "flex-end",
-                marginTop: 20,
-                flexWrap: "wrap",
-              }}
-            >
+        <AeroDialog
+          title="Fullscreen Mode"
+          icon="info"
+          onClose={() => setHasDismissedFullscreenPrompt(true)}
+          width={450}
+          buttons={
+            <>
               <button
                 onClick={() => {
                   void enterFullscreen();
                 }}
-                style={{
-                  border: "none",
-                  borderRadius: 999,
-                  padding: "10px 16px",
-                  background: "linear-gradient(180deg, #4a90d9, #2f6fb8)",
-                  color: "white",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                }}
+                className="px-4 py-1 border border-[#999] rounded bg-gradient-to-b from-[#f5f5f5] to-[#e5e5e5] hover:border-[#3399ff] hover:bg-[#eef6ff] shadow-sm text-black text-[13px] min-w-[120px]"
               >
-                Enter fullscreen
+                Enter Fullscreen
               </button>
               <button
                 onClick={() => setHasDismissedFullscreenPrompt(true)}
-                style={{
-                  border: "1px solid rgba(255,255,255,0.25)",
-                  borderRadius: 999,
-                  padding: "10px 16px",
-                  background: "rgba(255,255,255,0.08)",
-                  color: "white",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                }}
+                className="px-4 py-1 border border-[#0078d7] rounded bg-gradient-to-b from-[#e5f1fb] to-[#cbe4f7] shadow-[0_0_0_1px_#0078d7_inset] text-black text-[13px] min-w-[120px] focus:outline-none"
               >
-                Continue windowed
+                Continue Windowed
               </button>
-            </div>
+            </>
+          }
+        >
+          <div className="mb-4">
+            <div className="font-semibold mb-2 text-[15px]">Fullscreen mode recommended</div>
+            For the best retro desktop experience, switch to fullscreen.
+            You can also press F11 at any time to enter or exit fullscreen.
           </div>
-        </div>
+        </AeroDialog>
       )}
 
       {/* Taskbar */}
@@ -707,6 +667,31 @@ export default function Desktop({ wallpaperVersion }: DesktopProps) {
 
       {/* Security Modal */}
       <SecurityModal />
+
+      {/* Logging Out Overlay */}
+      {sessionState === "logging_out" && (
+        <AeroDialog
+          title="Logging off"
+          icon="info"
+          width={400}
+          buttons={
+            <button
+              onClick={() => {
+                setSessionState("logged_out");
+                resetSession();
+              }}
+              className="px-4 py-1 border border-[#0078d7] rounded bg-gradient-to-b from-[#e5f1fb] to-[#cbe4f7] shadow-[0_0_0_1px_#0078d7_inset] text-black text-[13px] min-w-[80px] focus:outline-none"
+            >
+              OK
+            </button>
+          }
+        >
+          <div className="flex flex-col gap-1 text-[14px]">
+            <span className="font-semibold text-[15px]">System Shutdown</span>
+            <span>Saving your settings and closing applications...</span>
+          </div>
+        </AeroDialog>
+      )}
     </div>
   );
 }

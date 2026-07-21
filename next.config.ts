@@ -7,6 +7,12 @@ const nextConfig: NextConfig = {
       {
         pathname: "/wallpaper.png",
       },
+      {
+        pathname: "/icons/**",
+      },
+      {
+        pathname: "/profile-picture.jpg",
+      },
     ],
   },
 };

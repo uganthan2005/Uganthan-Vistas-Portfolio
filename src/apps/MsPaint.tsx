@@ -6,7 +6,7 @@ import React, { useState, useRef, useCallback, useEffect } from "react";
    TYPES
    ═══════════════════════════════════════════ */
 
-type Tool = "pencil" | "brush" | "eraser" | "fill" | "line" | "rectangle" | "ellipse";
+type Tool = "free-select" | "select" | "eraser" | "fill" | "pick" | "magnifier" | "pencil" | "brush" | "airbrush" | "text" | "line" | "curve" | "rectangle" | "polygon" | "ellipse" | "round-rect";
 
 interface Point {
   x: number;
@@ -18,22 +18,29 @@ interface Point {
    ═══════════════════════════════════════════ */
 
 const TOOLS: { id: Tool; icon: string; label: string }[] = [
+  { id: "free-select", icon: "⚝", label: "Free-Form Select" },
+  { id: "select", icon: "⬚", label: "Select" },
+  { id: "eraser", icon: "🧽", label: "Eraser" },
+  { id: "fill", icon: "🪣", label: "Fill With Color" },
+  { id: "pick", icon: "💧", label: "Pick Color" },
+  { id: "magnifier", icon: "🔍", label: "Magnifier" },
   { id: "pencil", icon: "✏️", label: "Pencil" },
   { id: "brush", icon: "🖌️", label: "Brush" },
-  { id: "eraser", icon: "🧽", label: "Eraser" },
-  { id: "fill", icon: "🪣", label: "Fill" },
-  { id: "line", icon: "➖", label: "Line" },
+  { id: "airbrush", icon: "💨", label: "Airbrush" },
+  { id: "text", icon: "A", label: "Text" },
+  { id: "line", icon: "＼", label: "Line" },
+  { id: "curve", icon: "〰", label: "Curve" },
   { id: "rectangle", icon: "▭", label: "Rectangle" },
+  { id: "polygon", icon: "⬠", label: "Polygon" },
   { id: "ellipse", icon: "⬭", label: "Ellipse" },
+  { id: "round-rect", icon: "▢", label: "Rounded Rectangle" },
 ];
 
 const COLOR_PALETTE = [
   // Row 1
-  "#000000", "#FFFFFF", "#FF0000", "#FF8C00",
-  "#FFFF00", "#00CC00", "#00CCCC", "#0000FF",
+  "#000000", "#808080", "#800000", "#808000", "#008000", "#008080", "#000080", "#800080", "#808040", "#004040", "#0080FF", "#004080", "#8000FF", "#804000",
   // Row 2
-  "#800080", "#FF69B4", "#8B4513", "#808080",
-  "#8B0000", "#006400", "#00008B", "#000080",
+  "#FFFFFF", "#C0C0C0", "#FF0000", "#FFFF00", "#00FF00", "#00FFFF", "#0000FF", "#FF00FF", "#FFFF80", "#00FF80", "#80FFFF", "#8080FF", "#FF0080", "#FF8040",
 ];
 
 /* ═══════════════════════════════════════════
@@ -158,6 +165,7 @@ export default function MsPaint() {
   /* ── State ── */
   const [selectedTool, setSelectedTool] = useState<Tool>("pencil");
   const [selectedColor, setSelectedColor] = useState("#000000");
+  const [secondaryColor, setSecondaryColor] = useState("#FFFFFF"); // Right click color
   const [brushSize, setBrushSize] = useState(3);
   const [isDrawing, setIsDrawing] = useState(false);
   const [cursorPos, setCursorPos] = useState<Point>({ x: 0, y: 0 });
@@ -202,12 +210,13 @@ export default function MsPaint() {
       const mainCtx = canvas.getContext("2d")!;
       const overCtx = overlay.getContext("2d")!;
 
-      // Fill with white
-      mainCtx.fillStyle = "#FFFFFF";
-      mainCtx.fillRect(0, 0, w, h);
-
-      // Restore previous content if available
-      if (existingData) {
+      // Fill with white if no existing data
+      if (!existingData) {
+        mainCtx.fillStyle = "#FFFFFF";
+        mainCtx.fillRect(0, 0, w, h);
+      } else {
+        mainCtx.fillStyle = "#FFFFFF";
+        mainCtx.fillRect(0, 0, w, h); // Fill expanded areas with white
         mainCtx.putImageData(existingData, 0, 0);
       }
 
@@ -239,13 +248,14 @@ export default function MsPaint() {
     []
   );
 
-  const getDrawColor = useCallback(() => {
-    return selectedTool === "eraser" ? "#FFFFFF" : selectedColor;
-  }, [selectedTool, selectedColor]);
+  const getDrawColor = useCallback((isRightClick: boolean = false) => {
+    if (selectedTool === "eraser") return secondaryColor; // Eraser uses secondary color
+    return isRightClick ? secondaryColor : selectedColor;
+  }, [selectedTool, selectedColor, secondaryColor]);
 
   const getDrawSize = useCallback(() => {
     if (selectedTool === "brush") return brushSize * 2.5;
-    if (selectedTool === "eraser") return brushSize * 3;
+    if (selectedTool === "eraser") return brushSize * 4;
     return brushSize;
   }, [selectedTool, brushSize]);
 
@@ -276,35 +286,50 @@ export default function MsPaint() {
       const ctx = ctxRef.current;
       if (!ctx) return;
 
+      const isRightClick = e.button === 2;
       setIsDrawing(true);
       startPointRef.current = point;
       lastPointRef.current = point;
 
+      const currentColor = getDrawColor(isRightClick);
+
       if (selectedTool === "fill") {
         const canvas = canvasRef.current;
         if (!canvas) return;
-        floodFill(ctx, point.x, point.y, selectedColor, canvas.width, canvas.height);
+        floodFill(ctx, point.x, point.y, currentColor, canvas.width, canvas.height);
+        setIsDrawing(false);
+        return;
+      }
+
+      if (selectedTool === "pick") {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const pixelData = ctx.getImageData(point.x, point.y, 1, 1).data;
+        const hex = "#" + ("000000" + ((pixelData[0] << 16) | (pixelData[1] << 8) | pixelData[2]).toString(16)).slice(-6);
+        if (isRightClick) {
+          setSecondaryColor(hex.toUpperCase());
+        } else {
+          setSelectedColor(hex.toUpperCase());
+        }
         setIsDrawing(false);
         return;
       }
 
       if (selectedTool === "pencil" || selectedTool === "brush" || selectedTool === "eraser") {
-        // Draw a dot at the starting point
         ctx.beginPath();
-        ctx.fillStyle = getDrawColor();
+        ctx.fillStyle = currentColor;
         ctx.arc(point.x, point.y, getDrawSize() / 2, 0, Math.PI * 2);
         ctx.fill();
       }
 
-      if (selectedTool === "line" || selectedTool === "rectangle" || selectedTool === "ellipse") {
-        // Save canvas snapshot for shape preview
+      if (["line", "rectangle", "ellipse", "round-rect"].includes(selectedTool)) {
         const canvas = canvasRef.current;
         if (canvas) {
           snapshotRef.current = ctx.getImageData(0, 0, canvas.width, canvas.height);
         }
       }
     },
-    [selectedTool, selectedColor, getCanvasPoint, getDrawColor, getDrawSize]
+    [selectedTool, selectedColor, secondaryColor, getCanvasPoint, getDrawColor, getDrawSize]
   );
 
   const handleMouseMove = useCallback(
@@ -318,13 +343,15 @@ export default function MsPaint() {
       const overlayCtx = overlayCtxRef.current;
       if (!ctx) return;
 
+      const isRightClick = e.buttons === 2;
+      const currentColor = getDrawColor(isRightClick);
+
       if (selectedTool === "pencil" || selectedTool === "brush" || selectedTool === "eraser") {
-        drawLine(ctx, lastPointRef.current, point, getDrawColor(), getDrawSize());
+        drawLine(ctx, lastPointRef.current, point, currentColor, getDrawSize());
         lastPointRef.current = point;
         return;
       }
 
-      // Shape tools — draw preview on overlay
       if (!overlayCtx) return;
       const overlay = overlayCanvasRef.current;
       if (!overlay) return;
@@ -332,7 +359,8 @@ export default function MsPaint() {
       overlayCtx.clearRect(0, 0, overlay.width, overlay.height);
 
       const start = startPointRef.current;
-      overlayCtx.strokeStyle = selectedColor;
+      overlayCtx.strokeStyle = currentColor;
+      overlayCtx.fillStyle = currentColor;
       overlayCtx.lineWidth = brushSize;
       overlayCtx.lineCap = "round";
       overlayCtx.lineJoin = "round";
@@ -354,6 +382,12 @@ export default function MsPaint() {
         const ry = Math.abs(point.y - start.y) / 2;
         overlayCtx.beginPath();
         overlayCtx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+        overlayCtx.stroke();
+      } else if (selectedTool === "round-rect") {
+        const w = point.x - start.x;
+        const h = point.y - start.y;
+        overlayCtx.beginPath();
+        overlayCtx.roundRect(start.x, start.y, w, h, 8);
         overlayCtx.stroke();
       }
     },
@@ -379,17 +413,18 @@ export default function MsPaint() {
       const overlay = overlayCanvasRef.current;
       if (!ctx) return;
 
-      if (selectedTool === "line" || selectedTool === "rectangle" || selectedTool === "ellipse") {
+      if (["line", "rectangle", "ellipse", "round-rect"].includes(selectedTool)) {
         const point = getCanvasPoint(e);
         const start = startPointRef.current;
+        const isRightClick = e.button === 2;
+        const currentColor = getDrawColor(isRightClick);
 
-        // Restore snapshot first to remove any preview artifacts that bled through
         if (snapshotRef.current) {
           ctx.putImageData(snapshotRef.current, 0, 0);
         }
 
-        // Draw final shape on main canvas
-        ctx.strokeStyle = selectedColor;
+        ctx.strokeStyle = currentColor;
+        ctx.fillStyle = currentColor;
         ctx.lineWidth = brushSize;
         ctx.lineCap = "round";
         ctx.lineJoin = "round";
@@ -412,9 +447,14 @@ export default function MsPaint() {
           ctx.beginPath();
           ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
           ctx.stroke();
+        } else if (selectedTool === "round-rect") {
+          const w = point.x - start.x;
+          const h = point.y - start.y;
+          ctx.beginPath();
+          ctx.roundRect(start.x, start.y, w, h, 8);
+          ctx.stroke();
         }
 
-        // Clear overlay
         if (overlayCtx && overlay) {
           overlayCtx.clearRect(0, 0, overlay.width, overlay.height);
         }
@@ -422,7 +462,7 @@ export default function MsPaint() {
         snapshotRef.current = null;
       }
     },
-    [isDrawing, selectedTool, selectedColor, brushSize, getCanvasPoint]
+    [isDrawing, selectedTool, selectedColor, brushSize, getCanvasPoint, getDrawColor]
   );
 
   const handleMouseLeave = useCallback(() => {
@@ -440,29 +480,21 @@ export default function MsPaint() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }, []);
 
-  const handleSave = useCallback(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const link = document.createElement("a");
-    link.download = "painting.png";
-    link.href = canvas.toDataURL("image/png");
-    link.click();
-  }, []);
-
   /* ── Cursor style based on tool ── */
   const getCursorStyle = (): string => {
     switch (selectedTool) {
-      case "pencil":
-        return "crosshair";
-      case "brush":
-        return "crosshair";
-      case "eraser":
-        return "cell";
-      case "fill":
-        return "cell";
+      case "pencil": return "crosshair";
+      case "brush": return "crosshair";
+      case "eraser": return "cell";
+      case "fill": return "cell";
+      case "pick": return "crosshair";
+      case "magnifier": return "zoom-in";
       case "line":
       case "rectangle":
       case "ellipse":
+      case "round-rect":
+      case "polygon":
+      case "curve":
         return "crosshair";
       default:
         return "default";
@@ -478,171 +510,257 @@ export default function MsPaint() {
       className="flex flex-col h-full w-full select-none"
       style={{ fontFamily: "'Segoe UI', Tahoma, sans-serif", background: "#f0f0f0" }}
     >
-      {/* ── Toolbar ── */}
-      <div className="paint-toolbar">
-        {TOOLS.map((tool) => (
-          <button
-            key={tool.id}
-            className={`paint-tool-btn ${selectedTool === tool.id ? "paint-tool-btn-active" : ""}`}
-            onClick={() => setSelectedTool(tool.id)}
-            title={tool.label}
-          >
-            {tool.icon}
-          </button>
-        ))}
-
-        {/* Separator */}
-        <div
-          className="mx-1"
-          style={{
-            width: 1,
-            height: 22,
-            background: "#bbb",
-          }}
-        />
-
-        {/* Brush Size */}
-        <div className="flex items-center gap-1.5 px-2">
-          <span className="text-xs text-gray-600" style={{ fontSize: 11 }}>
-            Size:
-          </span>
-          <input
-            type="range"
-            min={1}
-            max={20}
-            value={brushSize}
-            onChange={(e) => setBrushSize(Number(e.target.value))}
-            className="w-20 h-3"
-            style={{ accentColor: "#4a90d9" }}
-            title={`Brush size: ${brushSize}px`}
-          />
-          <span
-            className="text-xs text-gray-600 tabular-nums"
-            style={{ fontSize: 11, minWidth: 20, textAlign: "right" }}
-          >
-            {brushSize}px
-          </span>
-        </div>
-
-        {/* Separator */}
-        <div
-          className="mx-1"
-          style={{
-            width: 1,
-            height: 22,
-            background: "#bbb",
-          }}
-        />
-
-        {/* Clear & Save */}
-        <button
-          className="paint-tool-btn"
-          onClick={handleClear}
-          title="Clear Canvas"
-          style={{ fontSize: 14 }}
-        >
-          🗑️
-        </button>
-        <button
-          className="paint-tool-btn"
-          onClick={handleSave}
-          title="Save as PNG"
-          style={{ fontSize: 14 }}
-        >
-          💾
-        </button>
-      </div>
-
-      {/* ── Color Palette ── */}
-      <div
-        className="flex items-center gap-1 px-2 py-1.5 flex-wrap"
-        style={{
-          background: "linear-gradient(180deg, #eaeaea 0%, #ddd 100%)",
-          borderBottom: "1px solid #bbb",
-        }}
-      >
-        {/* Current color preview */}
-        <div
-          className="mr-2 flex-shrink-0"
-          style={{
-            width: 28,
-            height: 28,
-            border: "2px solid #555",
-            borderRadius: 3,
-            background: selectedColor,
-            boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.4)",
-          }}
-          title={`Current color: ${selectedColor}`}
-        />
-
-        {/* Color swatches */}
-        <div className="flex flex-wrap gap-0.5">
-          {COLOR_PALETTE.slice(0, 8).map((color) => (
-            <button
-              key={color}
-              className={`paint-color-swatch ${selectedColor === color ? "paint-color-swatch-active" : ""}`}
-              style={{ background: color }}
-              onClick={() => setSelectedColor(color)}
-              title={color}
-            />
-          ))}
-        </div>
-        <div className="flex flex-wrap gap-0.5 ml-0.5">
-          {COLOR_PALETTE.slice(8).map((color) => (
-            <button
-              key={color}
-              className={`paint-color-swatch ${selectedColor === color ? "paint-color-swatch-active" : ""}`}
-              style={{ background: color }}
-              onClick={() => setSelectedColor(color)}
-              title={color}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* ── Canvas Area ── */}
-      <div
-        ref={containerRef}
-        className="flex-1 relative overflow-hidden"
-        style={{
-          background: "#c0c0c0",
-          borderTop: "1px solid #aaa",
-        }}
-      >
-        <canvas
-          ref={canvasRef}
-          className="absolute inset-0"
-          style={{ display: "block" }}
-        />
-        <canvas
-          ref={overlayCanvasRef}
-          className="absolute inset-0"
-          style={{ display: "block", cursor: getCursorStyle() }}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseLeave}
-        />
-      </div>
-
-      {/* ── Status Bar ── */}
-      <div
-        className="flex items-center px-3 gap-4"
-        style={{
-          height: 22,
-          background: "linear-gradient(180deg, #f0f0f0 0%, #e0e0e0 100%)",
-          borderTop: "1px solid #bbb",
+      {/* ── 1. Top Menu Bar ── */}
+      <div 
+        className="flex items-center px-1"
+        style={{ 
+          height: 20, 
+          background: "#ece9d8", 
+          borderBottom: "1px solid #d4d0c8",
           fontSize: 11,
-          color: "#555",
+          color: "#000"
         }}
       >
-        <span className="tabular-nums">
-          {cursorPos.x}, {cursorPos.y}px
-        </span>
-        <span style={{ color: "#999" }}>|</span>
-        <span className="capitalize">{selectedTool}</span>
-        <span style={{ color: "#999" }}>|</span>
-        <span>Size: {brushSize}px</span>
+        <span className="px-2 py-0.5 hover:bg-blue-100 hover:text-black cursor-pointer rounded-sm"><u>F</u>ile</span>
+        <span className="px-2 py-0.5 hover:bg-blue-100 hover:text-black cursor-pointer rounded-sm"><u>E</u>dit</span>
+        <span className="px-2 py-0.5 hover:bg-blue-100 hover:text-black cursor-pointer rounded-sm"><u>V</u>iew</span>
+        <span className="px-2 py-0.5 hover:bg-blue-100 hover:text-black cursor-pointer rounded-sm"><u>I</u>mage</span>
+        <span className="px-2 py-0.5 hover:bg-blue-100 hover:text-black cursor-pointer rounded-sm"><u>C</u>olors</span>
+        <span className="px-2 py-0.5 hover:bg-blue-100 hover:text-black cursor-pointer rounded-sm"><u>H</u>elp</span>
+      </div>
+
+      <div className="flex flex-1 overflow-hidden" style={{ background: "#d4d0c8" }}>
+        {/* ── 2. Left Toolbar Column ── */}
+        <div 
+          className="flex flex-col items-center p-1"
+          style={{ 
+            width: 58, 
+            background: "#d4d0c8",
+            borderRight: "1px solid #808080"
+          }}
+        >
+          {/* Tool Grid (2 cols) */}
+          <div className="flex flex-wrap gap-0.5 justify-center" style={{ width: 50 }}>
+            {TOOLS.map((tool) => {
+              const isActive = selectedTool === tool.id;
+              return (
+                <button
+                  key={tool.id}
+                  onClick={() => setSelectedTool(tool.id)}
+                  title={tool.label}
+                  style={{
+                    width: 24,
+                    height: 24,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    background: isActive ? "#d4d0c8" : "#d4d0c8",
+                    border: isActive ? "1px solid #000" : "1px solid transparent",
+                    boxShadow: isActive ? "inset 1px 1px 0px #fff, inset -1px -1px 0px #808080" : "inset -1px -1px 0px #404040, inset 1px 1px 0px #ffffff",
+                    fontSize: 12,
+                    padding: 0,
+                    margin: 0,
+                    outline: "none"
+                  }}
+                >
+                  <span style={{ 
+                    transform: isActive ? "translate(1px, 1px)" : "none",
+                    filter: "grayscale(100%) contrast(200%)" // Mimic old pixel icons if emojis are used
+                  }}>
+                    {tool.icon}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Properties Box (Brush size etc) */}
+          <div 
+            className="mt-2 w-10 h-16 flex flex-col items-center justify-center gap-1"
+            style={{ 
+              background: "#fff",
+              border: "1px solid #808080",
+              boxShadow: "inset 1px 1px 0px #404040, 1px 1px 0px #fff"
+            }}
+          >
+            {/* Simple representation of brush size options */}
+            <div 
+              onClick={() => setBrushSize(2)} 
+              style={{ width: 24, height: 8, background: brushSize === 2 ? "#000080" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}
+            >
+              <div style={{ width: 18, height: 2, background: brushSize === 2 ? "#fff" : "#000" }} />
+            </div>
+            <div 
+              onClick={() => setBrushSize(4)} 
+              style={{ width: 24, height: 8, background: brushSize === 4 ? "#000080" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}
+            >
+              <div style={{ width: 18, height: 4, background: brushSize === 4 ? "#fff" : "#000" }} />
+            </div>
+            <div 
+              onClick={() => setBrushSize(8)} 
+              style={{ width: 24, height: 8, background: brushSize === 8 ? "#000080" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}
+            >
+              <div style={{ width: 18, height: 8, background: brushSize === 8 ? "#fff" : "#000" }} />
+            </div>
+          </div>
+        </div>
+
+        {/* ── 3. Main Editor Area ── */}
+        <div className="flex flex-col flex-1 overflow-hidden" style={{ background: "#808080" }}>
+          
+          {/* Top Color Palette */}
+          <div 
+            className="flex items-center px-2 py-1"
+            style={{ 
+              height: 48,
+              background: "#d4d0c8",
+              borderBottom: "1px solid #808080",
+              borderLeft: "1px solid #fff"
+            }}
+          >
+            {/* Active Colors Box */}
+            <div 
+              className="relative mr-2"
+              style={{ 
+                width: 32, 
+                height: 32, 
+                background: "#d4d0c8",
+                border: "1px solid #808080",
+                boxShadow: "inset 1px 1px 0px #404040, 1px 1px 0px #fff"
+              }}
+            >
+              {/* Secondary Color (Background) */}
+              <div 
+                style={{
+                  position: "absolute",
+                  right: 2,
+                  bottom: 2,
+                  width: 14,
+                  height: 14,
+                  background: secondaryColor,
+                  border: "1px solid #808080",
+                  boxShadow: "inset 1px 1px 0px #404040, 1px 1px 0px #fff"
+                }}
+              />
+              {/* Primary Color (Foreground) */}
+              <div 
+                style={{
+                  position: "absolute",
+                  left: 2,
+                  top: 2,
+                  width: 14,
+                  height: 14,
+                  background: selectedColor,
+                  border: "1px solid #808080",
+                  boxShadow: "inset 1px 1px 0px #404040, 1px 1px 0px #fff",
+                  zIndex: 2
+                }}
+              />
+            </div>
+
+            {/* Swatches Grid */}
+            <div className="flex flex-col gap-0.5">
+              <div className="flex gap-0.5">
+                {COLOR_PALETTE.slice(0, 14).map(color => (
+                  <button
+                    key={color}
+                    onClick={() => setSelectedColor(color)}
+                    onContextMenu={(e) => { e.preventDefault(); setSecondaryColor(color); }}
+                    style={{
+                      width: 16,
+                      height: 16,
+                      background: color,
+                      border: "1px solid #808080",
+                      boxShadow: "inset 1px 1px 0px #404040, 1px 1px 0px #fff"
+                    }}
+                    title={color}
+                  />
+                ))}
+              </div>
+              <div className="flex gap-0.5">
+                {COLOR_PALETTE.slice(14).map(color => (
+                  <button
+                    key={color}
+                    onClick={() => setSelectedColor(color)}
+                    onContextMenu={(e) => { e.preventDefault(); setSecondaryColor(color); }}
+                    style={{
+                      width: 16,
+                      height: 16,
+                      background: color,
+                      border: "1px solid #808080",
+                      boxShadow: "inset 1px 1px 0px #404040, 1px 1px 0px #fff"
+                    }}
+                    title={color}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Canvas Scroll Area */}
+          <div 
+            className="flex-1 overflow-auto p-1 relative"
+            style={{ 
+              background: "#808080", 
+              boxShadow: "inset 1px 1px 2px rgba(0,0,0,0.5)",
+              // Mimic the checkered transparent background (though canvas will fill white)
+              backgroundImage: "linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)",
+              backgroundSize: "20px 20px",
+              backgroundPosition: "0 0, 0 10px, 10px -10px, -10px 0px"
+            }}
+          >
+            <div 
+              ref={containerRef}
+              style={{ 
+                width: 800, // Fixed size canvas or min size, let's make it fill mostly but have clear bounds
+                height: 600,
+                background: "#fff",
+                position: "relative",
+                boxShadow: "2px 2px 5px rgba(0,0,0,0.5)"
+              }}
+            >
+              <canvas
+                ref={canvasRef}
+                className="absolute inset-0"
+                style={{ display: "block" }}
+                onContextMenu={(e) => e.preventDefault()}
+              />
+              <canvas
+                ref={overlayCanvasRef}
+                className="absolute inset-0"
+                style={{ display: "block", cursor: getCursorStyle() }}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseLeave}
+                onContextMenu={(e) => e.preventDefault()}
+              />
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* ── 4. Bottom Status Bar ── */}
+      <div 
+        className="flex items-center px-2"
+        style={{ 
+          height: 22, 
+          background: "#ece9d8", 
+          borderTop: "1px solid #fff",
+          fontSize: 11,
+          color: "#000"
+        }}
+      >
+        <div style={{ flex: 1, borderRight: "1px solid #d4d0c8", paddingRight: 8 }}>
+          For Help, click Help Topics on the Help Menu.
+        </div>
+        <div style={{ width: 120, paddingLeft: 8, borderLeft: "1px solid #fff", borderRight: "1px solid #d4d0c8", paddingRight: 8 }}>
+          {cursorPos.x}, {cursorPos.y}
+        </div>
+        <div style={{ width: 120, paddingLeft: 8, borderLeft: "1px solid #fff" }}>
+          
+        </div>
       </div>
     </div>
   );

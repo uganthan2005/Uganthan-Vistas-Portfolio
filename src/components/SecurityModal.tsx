@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useDesktopStore } from "@/store/useDesktopStore";
+import AeroDialog from "./AeroDialog";
 
 export default function SecurityModal() {
   const { securityModal, hideSecurityModal } = useDesktopStore();
@@ -27,106 +28,42 @@ export default function SecurityModal() {
     hideSecurityModal();
   };
 
+  const title = securityModal.isDownload ? "File Download" : "External Application Request";
+  const icon = "warning";
+
   return (
-    <div className="security-modal-overlay" onClick={handleKeepWorking}>
-      <div className="security-modal" onClick={(e) => e.stopPropagation()}>
-        {/* Header */}
-        <div className="security-modal-header">
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="white"
-            strokeWidth="2"
+    <AeroDialog
+      title={title}
+      icon={icon}
+      onClose={handleKeepWorking}
+      width={480}
+      buttons={
+        <>
+          <button
+            onClick={handleProceed}
+            className="px-4 py-1 border border-[#999] rounded bg-gradient-to-b from-[#f5f5f5] to-[#e5e5e5] hover:border-[#3399ff] hover:bg-[#eef6ff] shadow-sm text-black text-[13px] min-w-[80px]"
           >
-            <path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z" />
-          </svg>
-          <span
-            style={{
-              color: "white",
-              fontSize: 13,
-              fontWeight: 500,
-              textShadow: "0 1px 2px rgba(0,0,0,0.3)",
-            }}
+            {securityModal.isDownload ? "Download" : "Proceed"}
+          </button>
+          <button
+            onClick={handleKeepWorking}
+            className="px-4 py-1 border border-[#0078d7] rounded bg-gradient-to-b from-[#e5f1fb] to-[#cbe4f7] shadow-[0_0_0_1px_#0078d7_inset] text-black text-[13px] min-w-[80px] focus:outline-none"
           >
-            Windows Security Alert
-          </span>
-        </div>
-
-        {/* Body */}
-        <div className="security-modal-body">
-          {/* Warning Icon */}
-          <div style={{ fontSize: 40, lineHeight: 1, flexShrink: 0 }}>⚠️</div>
-
-          {/* Message */}
-          <div style={{ fontSize: 13, lineHeight: 1.6, color: "#333" }}>
-            {securityModal.isDownload ? (
-              <>
-                <p style={{ fontWeight: 600, marginBottom: 8 }}>
-                  File Download Request
-                </p>
-                <p>
-                  The application is requesting to download a file from the
-                  system:
-                </p>
-                <p
-                  style={{
-                    background: "#f0f0f0",
-                    padding: "6px 10px",
-                    borderRadius: 4,
-                    margin: "8px 0",
-                    fontFamily: "Consolas, monospace",
-                    fontSize: 12,
-                    wordBreak: "break-all",
-                  }}
-                >
-                  📄 {securityModal.downloadFilename}
-                </p>
-                <p style={{ color: "#666", fontSize: 12 }}>
-                  Do you want to continue with this download?
-                </p>
-              </>
-            ) : (
-              <>
-                <p style={{ fontWeight: 600, marginBottom: 8 }}>
-                  External Application Access
-                </p>
-                <p>
-                  You are about to leave the desktop environment and open an
-                  external application to:
-                </p>
-                <p
-                  style={{
-                    background: "#f0f0f0",
-                    padding: "6px 10px",
-                    borderRadius: 4,
-                    margin: "8px 0",
-                    fontFamily: "Consolas, monospace",
-                    fontSize: 12,
-                    wordBreak: "break-all",
-                  }}
-                >
-                  🌐 {securityModal.targetDomain}
-                </p>
-                <p style={{ color: "#666", fontSize: 12 }}>
-                  Do you want to continue?
-                </p>
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Actions */}
-        <div className="security-modal-actions">
-          <button className="modal-btn modal-btn-primary" onClick={handleKeepWorking}>
-            Keep Working
+            Cancel
           </button>
-          <button className="modal-btn modal-btn-danger" onClick={handleProceed}>
-            {securityModal.isDownload ? "Download File" : "Proceed anyway"}
-          </button>
-        </div>
+        </>
+      }
+    >
+      <div className="flex flex-col gap-2 text-[14px]">
+        <span className="font-semibold text-[15px] truncate pr-4 text-[#003399]">
+          {securityModal.targetUrl}
+        </span>
+        <span>
+          {securityModal.isDownload 
+            ? "The application is requesting to download a file. Do you want to continue?"
+            : "You are about to leave the desktop environment and open an external application. Do you want to continue?"}
+        </span>
       </div>
-    </div>
+    </AeroDialog>
   );
 }

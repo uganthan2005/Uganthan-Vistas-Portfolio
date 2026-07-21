@@ -51,6 +51,8 @@ export interface DesktopState {
   toggleFlip3d: () => void;
   closeFlip3d: () => void;
   setBoot: () => void;
+  sessionState: "active" | "logging_out" | "logged_out";
+  setSessionState: (state: "active" | "logging_out" | "logged_out") => void;
   resetSession: () => void;
 }
 
@@ -377,5 +379,8 @@ export const useDesktopStore = create<DesktopState>((set, get) => ({
       isStartMenuOpen: false,
       isFlip3dOpen: false,
       hasBooted: false,
+      sessionState: "logged_out",
     }),
+  sessionState: "active",
+  setSessionState: (state) => set({ sessionState: state }),
 }));

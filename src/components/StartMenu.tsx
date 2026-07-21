@@ -1,8 +1,8 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element */
-
 import React from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDesktopStore, APP_REGISTRY } from "@/store/useDesktopStore";
 
@@ -323,18 +323,13 @@ export default function StartMenu({ onLogOff, onShutDown }: StartMenuProps) {
               width: 54,
               height: 54,
               borderRadius: 6,
-              background: "linear-gradient(135deg, rgba(81,137,213,1), rgba(34,88,168,1))",
               border: "2px solid rgba(255,255,255,0.9)",
               boxShadow: "0 4px 12px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.8)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "white",
-              fontSize: 24,
-              fontWeight: 700,
+              overflow: "hidden",
               zIndex: 10,
+              background: "black",
             }}>
-              U
+              <Image src="/profile-picture.jpg" alt="Uganthan" fill className="object-cover" />
             </div>
           </motion.div>
         </>

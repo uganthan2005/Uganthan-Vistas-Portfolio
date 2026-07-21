@@ -185,7 +185,7 @@ export default function CommandPrompt() {
         case "whoami":
           newLines = [
             ...newLines,
-            { id: nextId(), text: "  Uganthan M — Visual Designer & Full-stack Developer" },
+            { id: nextId(), text: "  Uganthan M — Student, AI engineer, Software developer, Graphic designer" },
             { id: nextId(), text: "" }
           ];
           break;
