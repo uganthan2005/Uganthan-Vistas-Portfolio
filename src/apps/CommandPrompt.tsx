@@ -86,9 +86,10 @@ const CONTACT_LINKS: ContactLink[] = [
   { label: "Email", url: "mailto:uganthanmariappan@gmail.com" },
   { label: "GitHub", url: "https://github.com/uganthan2005" },
   { label: "LinkedIn", url: "https://linkedin.com/in/uganthanm" },
-  { label: "LeetCode", url: "https://leetcode.com/uganthan2005" },
+  { label: "LeetCode", url: "https://leetcode.com/u/uganthan_m/" },
   { label: "CodeChef", url: "https://www.codechef.com/users/uganthanmariappan" },
   { label: "Behance", url: "https://www.behance.net/uganthamariapp" },
+  { label: "Letterboxd", url: "https://letterboxd.com/_Ben_10__/" },
 ];
 
 const PROJECTS_OUTPUT: string[] = [

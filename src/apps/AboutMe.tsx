@@ -1,7 +1,9 @@
 "use client";
 
-import React from "react";
 import Image from "next/image";
+import { FaGithub, FaLinkedin, FaInstagram, FaBehance } from "react-icons/fa";
+import { FcBriefcase, FcGraduationCap, FcSettings, FcSportsMode, FcDiploma1 } from "react-icons/fc";
+import { SiLeetcode, SiLetterboxd } from "react-icons/si";
 import OsLink from "@/components/OsLink";
 import Rover from "@/components/Rover";
 
@@ -98,10 +100,10 @@ const certifications = [
    COMPONENTS
    ───────────────────────────────────────────── */
 
-function WelcomeItem({ icon, title, description, isBullet = false }: { icon: string, title: string, description: string | string[], isBullet?: boolean }) {
+function WelcomeItem({ icon, title, description, isBullet = false }: { icon: React.ReactNode, title: string, description: string | string[], isBullet?: boolean }) {
   return (
     <div style={{ display: "flex", gap: 12, padding: "8px 16px", cursor: "default" }}>
-      <div style={{ fontSize: 36, filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.2))", marginTop: 4 }}>
+      <div style={{ fontSize: 36, filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.2))", marginTop: 4, display: "flex", alignItems: "flex-start" }}>
         {icon}
       </div>
       <div style={{ flex: 1 }}>
@@ -222,18 +224,13 @@ export default function AboutMe() {
           </div>
 
           {/* System Specs (Details) */}
-          <div style={{ display: "flex", gap: 20, paddingTop: 4 }}>
-            <div style={{ display: "flex", gap: 16 }}>
-              <div style={{ fontSize: 48, filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.3))", marginTop: 4 }}>
-                🖥️
-              </div>
-              <div style={{ fontSize: 12, lineHeight: 1.5, textShadow: "0 1px 2px rgba(0,0,0,0.4)" }}>
-                <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 4 }}>Uganthan M™ Portfolio</div>
-                <div>Role: AI & Data Science Engineer</div>
-                <div>Education: B.Tech (CIT) / B.Sc (IIT Madras)</div>
-                <div>Contact: uganthanmariappan@gmail.com</div>
-                <div>Phone: +91 8667670398</div>
-              </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            <div style={{ fontSize: 12, lineHeight: 1.5, textShadow: "0 1px 2px rgba(0,0,0,0.4)" }}>
+              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 4 }}>Uganthan M™ Portfolio</div>
+              <div>Role: AI & Data Science Engineer</div>
+              <div>Education: B.Tech (CIT) / B.Sc (IIT Madras)</div>
+              <div>Contact: uganthanmariappan@gmail.com</div>
+              <div>Phone: +91 8667670398</div>
             </div>
           </div>
 
@@ -273,7 +270,7 @@ export default function AboutMe() {
             {experiences.map((exp, i) => (
               <WelcomeItem 
                 key={i}
-                icon="💼"
+                icon={<FcBriefcase size={36} />}
                 title={`${exp.org} - ${exp.title}`}
                 description={[exp.period, ...exp.bullets]}
                 isBullet={true}
@@ -282,7 +279,7 @@ export default function AboutMe() {
             {education.map((edu, i) => (
               <WelcomeItem 
                 key={i}
-                icon="🎓"
+                icon={<FcGraduationCap size={36} />}
                 title={edu.degree}
                 description={[edu.school, edu.details]}
               />
@@ -314,19 +311,19 @@ export default function AboutMe() {
             {skillCategories.map((cat, i) => (
               <WelcomeItem 
                 key={i}
-                icon="⚙️"
+                icon={<FcSettings size={36} />}
                 title={cat.title}
                 description={cat.items}
               />
             ))}
             <WelcomeItem 
-              icon="🏆"
+              icon={<FcSportsMode size={36} />}
               title="Key Achievements"
               description={achievements}
               isBullet={true}
             />
             <WelcomeItem 
-              icon="📜"
+              icon={<FcDiploma1 size={36} />}
               title="Certifications"
               description={certifications}
               isBullet={true}
@@ -340,13 +337,22 @@ export default function AboutMe() {
         {/* Links Section */}
         <div style={{ padding: "20px 36px", display: "flex", gap: 16 }}>
           <OsLink href="https://github.com/uganthan2005" className="hover:underline" style={{ fontSize: 12, color: "#003399", display: "flex", alignItems: "center", gap: 4 }}>
-            <span>🐙</span> GitHub
+            <FaGithub size={16} color="#333" /> GitHub
           </OsLink>
           <OsLink href="https://linkedin.com/in/uganthanm" className="hover:underline" style={{ fontSize: 12, color: "#003399", display: "flex", alignItems: "center", gap: 4 }}>
-            <span>💼</span> LinkedIn
+            <FaLinkedin size={16} color="#0077b5" /> LinkedIn
           </OsLink>
-          <OsLink href="https://leetcode.com/uganthan2005" className="hover:underline" style={{ fontSize: 12, color: "#003399", display: "flex", alignItems: "center", gap: 4 }}>
-            <span>🧩</span> LeetCode
+          <OsLink href="https://www.instagram.com/uganthan_vk?igsh=MXA2cWZremJjN3Z4cw==" className="hover:underline" style={{ fontSize: 12, color: "#003399", display: "flex", alignItems: "center", gap: 4 }}>
+            <FaInstagram size={16} color="#E1306C" /> Instagram
+          </OsLink>
+          <OsLink href="https://leetcode.com/u/uganthan_m/" className="hover:underline" style={{ fontSize: 12, color: "#003399", display: "flex", alignItems: "center", gap: 4 }}>
+            <SiLeetcode size={16} color="#FFA116" /> LeetCode
+          </OsLink>
+          <OsLink href="https://www.behance.net/uganthamariapp" className="hover:underline" style={{ fontSize: 12, color: "#003399", display: "flex", alignItems: "center", gap: 4 }}>
+            <FaBehance size={16} color="#053eff" /> Behance
+          </OsLink>
+          <OsLink href="https://letterboxd.com/_Ben_10__/" className="hover:underline" style={{ fontSize: 12, color: "#003399", display: "flex", alignItems: "center", gap: 4 }}>
+            <SiLetterboxd size={16} color="#00E054" /> Letterboxd
           </OsLink>
         </div>
 

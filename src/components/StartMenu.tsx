@@ -4,6 +4,8 @@
 import React from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
+import { FaGithub, FaLinkedin, FaBehance, FaEnvelope, FaInstagram } from "react-icons/fa";
+import { SiLetterboxd } from "react-icons/si";
 import { useDesktopStore, APP_REGISTRY } from "@/store/useDesktopStore";
 
 interface StartMenuProps {
@@ -51,24 +53,34 @@ const QUICK_LAUNCHES: QuickLaunch[] = [
 
 const SOCIAL_LINKS: SocialLink[] = [
   {
+    label: "Instagram",
+    href: "https://www.instagram.com/uganthan_vk?igsh=MXA2cWZremJjN3Z4cw==",
+    icon: <span style={{...socialBadgeStyle, background: "transparent", border: "none", color: "#E1306C"}}><FaInstagram size={28} /></span>,
+  },
+  {
     label: "GitHub",
     href: "https://github.com/uganthan2005",
-    icon: <span style={socialBadgeStyle}>GH</span>,
+    icon: <span style={{...socialBadgeStyle, background: "transparent", border: "none", color: "#ffffff"}}><FaGithub size={28} /></span>,
   },
   {
     label: "LinkedIn",
     href: "https://linkedin.com/in/uganthanm",
-    icon: <span style={socialBadgeStyle}>in</span>,
+    icon: <span style={{...socialBadgeStyle, background: "transparent", border: "none", color: "#0077b5"}}><FaLinkedin size={28} /></span>,
   },
   {
     label: "Behance",
     href: "https://www.behance.net/uganthamariapp",
-    icon: <span style={socialBadgeStyle}>Be</span>,
+    icon: <span style={{...socialBadgeStyle, background: "transparent", border: "none", color: "#053eff"}}><FaBehance size={28} /></span>,
   },
   {
     label: "Email",
     href: "mailto:uganthanmariappan@gmail.com",
-    icon: <span style={socialBadgeStyle}>@</span>,
+    icon: <span style={{...socialBadgeStyle, background: "transparent", border: "none", color: "#ffffff"}}><FaEnvelope size={28} /></span>,
+  },
+  {
+    label: "Letterboxd",
+    href: "https://letterboxd.com/_Ben_10__/",
+    icon: <span style={{...socialBadgeStyle, background: "transparent", border: "none", color: "#00E054"}}><SiLetterboxd size={28} /></span>,
   },
 ];
 
@@ -259,7 +271,10 @@ export default function StartMenu({ onLogOff, onShutDown }: StartMenuProps) {
                         e.currentTarget.style.textShadow = "none";
                       }}
                     >
-                      {link.label}
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        {link.icon}
+                        <span>{link.label}</span>
+                      </div>
                     </button>
                   ))}
                   <hr style={{ borderTop: "1px solid rgba(255,255,255,0.1)", margin: "8px 0" }} />

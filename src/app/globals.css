@@ -55,6 +55,7 @@ html, body {
   -webkit-font-smoothing: antialiased;
   user-select: none;
   cursor: default;
+  zoom: 1.05;
 }
 
 .desktop-shell {

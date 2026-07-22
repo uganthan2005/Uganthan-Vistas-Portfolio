@@ -78,11 +78,10 @@ export default function Taskbar({
   };
 
   const trayButtonStyle: React.CSSProperties = {
-    width: 30,
-    height: 30,
-    borderRadius: 999,
-    border: "1px solid rgba(255,255,255,0.08)",
-    background: "rgba(255,255,255,0.08)",
+    width: 20,
+    height: 20,
+    background: "transparent",
+    border: "none",
     color: "white",
     cursor: "pointer",
     display: "inline-flex",
@@ -90,6 +89,9 @@ export default function Taskbar({
     justifyContent: "center",
     transition: "all 0.15s ease",
     position: "relative",
+    padding: 0,
+    margin: "0 2px",
+    filter: "drop-shadow(0px 1px 2px rgba(0,0,0,0.5))",
   };
 
   const renderTrayButton = (
@@ -108,8 +110,7 @@ export default function Taskbar({
       onMouseLeave={() => setTooltip(null)}
       style={{
         ...trayButtonStyle,
-        background: active ? "rgba(100, 170, 255, 0.24)" : trayButtonStyle.background,
-        borderColor: active ? "rgba(120, 180, 255, 0.45)" : trayButtonStyle.borderColor,
+        opacity: active ? 1 : 0.85,
       }}
     >
       {icon}
@@ -171,7 +172,10 @@ export default function Taskbar({
       </div>
 
       {/* System Tray */}
-      <div className="system-tray" style={{ position: "relative" }}>
+      <div className="system-tray" style={{ position: "relative", display: "flex", alignItems: "center", padding: "0 12px 0 8px", gap: 2 }}>
+        <div style={{ color: "white", fontSize: 10, marginRight: 6, opacity: 0.8, cursor: "pointer", filter: "drop-shadow(0px 1px 1px rgba(0,0,0,0.8))" }}>
+          {"<"}
+        </div>
         {tooltip && (
           <div
             style={{
@@ -179,17 +183,20 @@ export default function Taskbar({
               right: 0,
               bottom: 44,
               padding: "8px 10px",
-              borderRadius: 10,
-              background: "rgba(10, 14, 22, 0.95)",
-              border: "1px solid rgba(255,255,255,0.08)",
-              boxShadow: "0 14px 40px rgba(0,0,0,0.35)",
-              color: "white",
               width: 220,
+              backgroundColor: "#FFFFE1",
+              backgroundImage: "linear-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px)",
+              backgroundSize: "4px 4px",
+              border: "1px solid black",
+              borderRadius: 7,
+              boxShadow: "3px 3px 6px rgba(0,0,0,0.4)",
+              color: "black",
+              fontFamily: "Tahoma, 'Segoe UI', sans-serif",
               zIndex: 50,
             }}
           >
             <div style={{ fontSize: 12, fontWeight: 700 }}>{tooltip.label}</div>
-            <div style={{ fontSize: 11, opacity: 0.75, marginTop: 4, lineHeight: 1.4 }}>{tooltip.meta}</div>
+            <div style={{ fontSize: 11, color: "#333", marginTop: 4, lineHeight: 1.4 }}>{tooltip.meta}</div>
           </div>
         )}
 
@@ -226,9 +233,8 @@ export default function Taskbar({
           isFullscreen
         )}
 
-        <div style={{ textAlign: "right", marginLeft: 4 }}>
-          <div style={{ fontSize: 12, fontWeight: 500 }}>{time}</div>
-          <div style={{ fontSize: 10, opacity: 0.7 }}>{date}</div>
+        <div style={{ textAlign: "right", marginLeft: 8, color: "white", fontSize: 13, textShadow: "1px 1px 2px rgba(0,0,0,0.8)" }}>
+          {time}
         </div>
       </div>
     </div>

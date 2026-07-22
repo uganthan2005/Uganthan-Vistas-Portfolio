@@ -12,6 +12,7 @@ import DesktopIcon from "@/components/DesktopIcon";
 import SecurityModal from "@/components/SecurityModal";
 import AeroDialog from "@/components/AeroDialog";
 import StartMenu from "@/components/StartMenu";
+import NotificationBalloon from "@/components/NotificationBalloon";
 
 /* Dynamic imports for apps to reduce initial bundle */
 import dynamic from "next/dynamic";
@@ -622,22 +623,42 @@ export default function Desktop({ wallpaperVersion }: DesktopProps) {
             bottom: 56,
             zIndex: 9300,
             width: 320,
-            borderRadius: 18,
-            padding: 16,
-            background: "rgba(14, 18, 28, 0.92)",
-            color: "white",
-            boxShadow: "0 20px 60px rgba(0,0,0,0.45)",
-            border: "1px solid rgba(255,255,255,0.08)",
+            backgroundColor: "#FFFFE1",
+            backgroundImage: "linear-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px)",
+            backgroundSize: "4px 4px",
+            border: "1px solid black",
+            borderRadius: 7,
+            boxShadow: "3px 3px 6px rgba(0,0,0,0.4)",
+            padding: "10px 14px",
+            color: "black",
+            fontFamily: "Tahoma, 'Segoe UI', sans-serif",
           }}
           onClick={(e) => e.stopPropagation()}
         >
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-            <div style={{ fontSize: 14, fontWeight: 700 }}>Notifications</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+               <div style={{
+                 width: 22,
+                 height: 22,
+                 borderRadius: "50%",
+                 background: "linear-gradient(135deg, #fff 0%, #c3d9ff 100%)",
+                 border: "1px solid #7792c9",
+                 display: "flex",
+                 alignItems: "center",
+                 justifyContent: "center",
+                 color: "#003399",
+                 fontWeight: "bold",
+                 fontSize: 14,
+                 fontFamily: "'Times New Roman', serif",
+                 boxShadow: "inset -1px -1px 3px rgba(0,0,0,0.15), 1px 1px 2px rgba(0,0,0,0.2)"
+               }}>i</div>
+               <div style={{ fontSize: 14, fontWeight: 700 }}>Notifications</div>
+            </div>
             <button
               onClick={() => setShowNotificationCenter(false)}
-              style={{ border: "none", background: "transparent", color: "white", cursor: "pointer", fontSize: 16 }}
+              style={{ border: "none", background: "transparent", color: "#555", cursor: "pointer", fontSize: 16, fontWeight: "bold" }}
             >
-              ✕
+              ×
             </button>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -645,25 +666,50 @@ export default function Desktop({ wallpaperVersion }: DesktopProps) {
               <div
                 key={notification.title}
                 style={{
-                  padding: 12,
-                  borderRadius: 12,
-                  background: "rgba(255,255,255,0.06)",
-                  border: "1px solid rgba(255,255,255,0.08)",
+                  padding: 8,
+                  borderRadius: 4,
+                  border: "1px solid rgba(0,0,0,0.1)",
+                  background: "rgba(255,255,255,0.4)",
                 }}
               >
                 <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
                   <div style={{ fontSize: 13, fontWeight: 700 }}>{notification.title}</div>
-                  <div style={{ fontSize: 11, opacity: 0.6 }}>{notification.time}</div>
+                  <div style={{ fontSize: 11, color: "#666" }}>{notification.time}</div>
                 </div>
-                <div style={{ fontSize: 12, opacity: 0.82, marginTop: 6, lineHeight: 1.4 }}>{notification.body}</div>
+                <div style={{ fontSize: 12, color: "#333", marginTop: 4, lineHeight: 1.4 }}>{notification.body}</div>
               </div>
             ))}
           </div>
+
+          {/* Balloon Arrow */}
+          <div style={{
+            position: "absolute",
+            bottom: -14,
+            right: 80,
+            width: 0,
+            height: 0,
+            borderLeft: "14px solid transparent",
+            borderRight: "0px solid transparent",
+            borderTop: "14px solid #000",
+          }} />
+          <div style={{
+            position: "absolute",
+            bottom: -11,
+            right: 81,
+            width: 0,
+            height: 0,
+            borderLeft: "11px solid transparent",
+            borderRight: "0px solid transparent",
+            borderTop: "12px solid #FFFFE1",
+          }} />
         </div>
       )}
 
       {/* Start Menu */}
       <StartMenu onLogOff={handleLogOff} onShutDown={handleShutDown} />
+
+      {/* Notification Balloon */}
+      <NotificationBalloon />
 
       {/* Security Modal */}
       <SecurityModal />
