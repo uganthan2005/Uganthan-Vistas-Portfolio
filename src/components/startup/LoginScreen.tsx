@@ -20,11 +20,11 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
       <div className="w-full h-16 bg-gradient-to-r from-[#001082] to-[#1231a4] shadow-md z-10 flex items-center shrink-0"></div>
 
       {/* Main Content Area */}
-      <div className="relative z-10 w-full max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-center gap-12 md:gap-24 px-8">
+      <div className="flex-1 flex w-full h-full relative z-10 flex-col md:flex-row items-center justify-center gap-12 px-8 overflow-y-auto overflow-x-hidden md:overflow-hidden py-8 md:py-0">
         
         {/* Left Side: Logo */}
-        <div className="flex flex-col items-end justify-center w-1/2 max-w-[500px]">
-          <div className="flex items-start gap-6 mb-4">
+        <div className="flex flex-col items-center md:items-end justify-center w-full md:w-1/2 max-w-[500px]">
+          <div className="flex items-start gap-4 md:gap-6 mb-4">
             <Image 
               src="/icons/Start-icon.png" 
               alt="Windows Logo" 
@@ -53,10 +53,10 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
         </div>
 
         {/* Divider Line */}
-        <div className="hidden md:block w-[1px] h-1/2 bg-white/20 shrink-0 mx-4"></div>
+        <div className="hidden md:block w-[1px] h-1/2 bg-white/20 shrink-0 mx-8"></div>
 
         {/* Right Side: User List */}
-        <div className="flex flex-col items-start justify-center w-1/2 max-w-[500px]">
+        <div className="flex flex-col items-center md:items-start justify-center w-full md:w-1/2 max-w-[500px]">
           
           {/* User Card */}
           <button 
@@ -87,7 +87,7 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
       </div>
 
       {/* Bottom Footer Bar */}
-      <div className="w-full h-16 bg-gradient-to-r from-[#001082] to-[#1231a4] shadow-md z-10 flex items-center justify-between px-8 shrink-0 border-t border-[#f7a249]">
+      <div className="w-full min-h-[4rem] py-3 md:py-0 bg-gradient-to-r from-[#001082] to-[#1231a4] shadow-md z-10 flex flex-col md:flex-row items-center justify-between gap-2 md:gap-0 px-4 md:px-8 shrink-0 border-t border-[#f7a249]">
         <div className="flex items-center space-x-2 text-white/90">
           <div className="w-6 h-6 rounded bg-green-500 border border-white/50 shadow flex items-center justify-center">
             <div className="w-3 h-3 border-t-2 border-l-2 border-white rounded-tl-sm rotate-45 transform translate-x-[2px] translate-y-[2px]"></div>

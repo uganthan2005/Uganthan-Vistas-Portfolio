@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Uganthan M — Interactive Portfolio",
+  title: "Uganthan-Vistas-Portfolio",
+  icons: {
+    icon: "/icons/Start-icon.png",
+  },
   description:
     "A retro Windows XP & Vista inspired interactive portfolio showcasing Uganthan M's projects, skills, and creative work through a browser-based OS simulation.",
   keywords: [
