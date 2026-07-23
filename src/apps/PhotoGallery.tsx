@@ -12,6 +12,7 @@ interface GalleryItem {
   gradient: string;
   folder: string;
   year: number;
+  imageUrl?: string;
 }
 
 interface SidebarNode {
@@ -27,40 +28,40 @@ interface SidebarNode {
    ═══════════════════════════════════════════ */
 
 const GALLERY_ITEMS: GalleryItem[] = [
-  // Tech Fiesta
-  { id: "tf-1", title: "Tech Fiesta Poster Design 1", gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)", folder: "techfiesta", year: 2026 },
-  { id: "tf-2", title: "Tech Fiesta Banner", gradient: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)", folder: "techfiesta", year: 2026 },
-  { id: "tf-3", title: "Tech Fiesta Social Media", gradient: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)", folder: "techfiesta", year: 2026 },
-  { id: "tf-4", title: "Tech Fiesta Standee", gradient: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)", folder: "techfiesta", year: 2026 },
-  { id: "tf-5", title: "Tech Fiesta ID Card", gradient: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)", folder: "techfiesta", year: 2026 },
+  // Events & Posters
+  { id: "img-1", title: "Tech Fiesta Poster", gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)", folder: "design", year: 2026, imageUrl: "https://res.cloudinary.com/dkvvu8tac/image/upload/q_auto,f_auto/v1784816176/techfiesta1_ws8zmh.png" },
+  { id: "img-2", title: "Hacksymmetric Banner", gradient: "linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)", folder: "design", year: 2025, imageUrl: "https://res.cloudinary.com/dkvvu8tac/image/upload/q_auto,f_auto/v1784816210/hacksymmetric1_pcxuuf.png" },
+  { id: "img-3", title: "Project Presentation", gradient: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)", folder: "design", year: 2026, imageUrl: "https://res.cloudinary.com/dkvvu8tac/image/upload/q_auto,f_auto/v1784816209/projectpresentation_ixy4la.png" },
+  { id: "img-4", title: "Blend with Blender", gradient: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)", folder: "design", year: 2026, imageUrl: "https://res.cloudinary.com/dkvvu8tac/image/upload/q_auto,f_auto/v1784816160/blend-with-blender1_eiz4gi.png" },
+  { id: "img-5", title: "Money Master Poster", gradient: "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)", folder: "design", year: 2025, imageUrl: "https://res.cloudinary.com/dkvvu8tac/image/upload/q_auto,f_auto/v1784816150/money_master_poster_gz4dfh.png" },
+  { id: "img-6", title: "Escape Room Poster", gradient: "linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)", folder: "design", year: 2026, imageUrl: "https://res.cloudinary.com/dkvvu8tac/image/upload/q_auto,f_auto/v1784816150/escaperoom_fklire.png" },
+  { id: "img-7", title: "Reverse Coding", gradient: "linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)", folder: "design", year: 2026, imageUrl: "https://res.cloudinary.com/dkvvu8tac/image/upload/q_auto,f_auto/v1784816143/reversecoding1_ndayzc.png" },
 
-  // Hacksymmetric
-  { id: "hk-1", title: "Hacksymmetric Banner", gradient: "linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)", folder: "hacksymmetric", year: 2025 },
-  { id: "hk-2", title: "Hacksymmetric Logo Concept", gradient: "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)", folder: "hacksymmetric", year: 2025 },
-  { id: "hk-3", title: "Hacksymmetric Certificate", gradient: "linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)", folder: "hacksymmetric", year: 2025 },
-  { id: "hk-4", title: "Hacksymmetric Social Post", gradient: "linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)", folder: "hacksymmetric", year: 2025 },
-  { id: "hk-5", title: "Hacksymmetric Poster", gradient: "linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%)", folder: "hacksymmetric", year: 2025 },
-  { id: "hk-6", title: "Hacksymmetric Backdrop", gradient: "linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)", folder: "hacksymmetric", year: 2025 },
+  // UI/UX & Creative
+  { id: "img-8", title: "UI/UX Design", gradient: "linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%)", folder: "design", year: 2026, imageUrl: "https://res.cloudinary.com/dkvvu8tac/image/upload/q_auto,f_auto/v1784816191/ui_ux_srr78m.png" },
+  { id: "img-9", title: "MED Design", gradient: "linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)", folder: "design", year: 2025, imageUrl: "https://res.cloudinary.com/dkvvu8tac/image/upload/q_auto,f_auto/v1784816223/med_o2u0pt.png" },
+  { id: "img-10", title: "DF2 Design", gradient: "linear-gradient(135deg, #f6d365 0%, #fda085 100%)", folder: "design", year: 2024, imageUrl: "https://res.cloudinary.com/dkvvu8tac/image/upload/q_auto,f_auto/v1784816198/df2_iua5cx.png" },
+  { id: "img-11", title: "DP / Profile", gradient: "linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)", folder: "design", year: 2024, imageUrl: "https://res.cloudinary.com/dkvvu8tac/image/upload/q_auto,f_auto/v1784816219/dp_rcej45.png" },
+  { id: "img-12", title: "LED Graphic", gradient: "linear-gradient(135deg, #fdcbf1 0%, #e6dee9 100%)", folder: "design", year: 2024, imageUrl: "https://res.cloudinary.com/dkvvu8tac/image/upload/q_auto,f_auto/v1784816161/LED_jgfuqc.png" },
 
-  // TALOS 5.0
-  { id: "ta-1", title: "TALOS 5.0 Event Poster", gradient: "linear-gradient(135deg, #f6d365 0%, #fda085 100%)", folder: "talos", year: 2026 },
-  { id: "ta-2", title: "TALOS 5.0 Stage Banner", gradient: "linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)", folder: "talos", year: 2026 },
-  { id: "ta-3", title: "TALOS 5.0 Invitation", gradient: "linear-gradient(135deg, #fdcbf1 0%, #e6dee9 100%)", folder: "talos", year: 2026 },
-  { id: "ta-4", title: "TALOS 5.0 Schedule Card", gradient: "linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)", folder: "talos", year: 2026 },
-  { id: "ta-5", title: "TALOS 5.0 Highlights Reel", gradient: "linear-gradient(135deg, #f5576c 0%, #ff6f61 100%)", folder: "talos", year: 2026 },
-
-  // Merchandise
-  { id: "me-1", title: "T-Shirt Front Design", gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)", folder: "merchandise", year: 2024 },
-  { id: "me-2", title: "T-Shirt Back Design", gradient: "linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%)", folder: "merchandise", year: 2024 },
-  { id: "me-3", title: "Sticker Pack Sheet", gradient: "linear-gradient(135deg, #fddb92 0%, #d1fdff 100%)", folder: "merchandise", year: 2024 },
-  { id: "me-4", title: "Hoodie Mockup", gradient: "linear-gradient(135deg, #9890e3 0%, #b1f4cf 100%)", folder: "merchandise", year: 2024 },
-
-  // Promotional Videos
-  { id: "pv-1", title: "Promo Teaser Thumbnail", gradient: "linear-gradient(135deg, #c471f5 0%, #fa71cd 100%)", folder: "promovideos", year: 2025 },
-  { id: "pv-2", title: "Event Recap Thumbnail", gradient: "linear-gradient(135deg, #48c6ef 0%, #6f86d6 100%)", folder: "promovideos", year: 2025 },
-  { id: "pv-3", title: "Workshop Intro Frame", gradient: "linear-gradient(135deg, #feada6 0%, #f5efef 100%)", folder: "promovideos", year: 2025 },
-  { id: "pv-4", title: "Behind the Scenes Still", gradient: "linear-gradient(135deg, #a3bded 0%, #6991c7 100%)", folder: "promovideos", year: 2025 },
-  { id: "pv-5", title: "Announcement Video Cover", gradient: "linear-gradient(135deg, #13547a 0%, #80d0c7 100%)", folder: "promovideos", year: 2025 },
+  // Marketing
+  { id: "img-13", title: "General Banner", gradient: "linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)", folder: "design", year: 2025, imageUrl: "https://res.cloudinary.com/dkvvu8tac/image/upload/q_auto,f_auto/v1784816154/banner_lt0ioj.png" },
+  { id: "img-14", title: "Coupon Design", gradient: "linear-gradient(135deg, #f5576c 0%, #ff6f61 100%)", folder: "design", year: 2025, imageUrl: "https://res.cloudinary.com/dkvvu8tac/image/upload/q_auto,f_auto/v1784816151/coupon_pxglxq.png" },
+  { id: "img-15", title: "Sticker 3", gradient: "linear-gradient(135deg, #f5576c 0%, #ff6f61 100%)", folder: "design", year: 2025, imageUrl: "https://res.cloudinary.com/dkvvu8tac/image/upload/q_auto,f_auto/v1784816161/sticker3_tosc9o.png" },
+  { id: "img-16", title: "RCS", gradient: "linear-gradient(135deg, #f5576c 0%, #ff6f61 100%)", folder: "design", year: 2025, imageUrl: "https://res.cloudinary.com/dkvvu8tac/image/upload/q_auto,f_auto/v1784816201/rcs_blwmpm.png" },
+  { id: "img-17", title: "TK Flag Front", gradient: "linear-gradient(135deg, #f5576c 0%, #ff6f61 100%)", folder: "design", year: 2025, imageUrl: "https://res.cloudinary.com/dkvvu8tac/image/upload/q_auto,f_auto/v1784816227/tk-flag-front_scnsei.png" },
+  { id: "img-18", title: "TK Flag Back", gradient: "linear-gradient(135deg, #f5576c 0%, #ff6f61 100%)", folder: "design", year: 2025, imageUrl: "https://res.cloudinary.com/dkvvu8tac/image/upload/q_auto,f_auto/v1784816206/tk-flag-back_kibews.png" },
+  { id: "img-19", title: "Hacksymmetric 2", gradient: "linear-gradient(135deg, #f5576c 0%, #ff6f61 100%)", folder: "design", year: 2025, imageUrl: "https://res.cloudinary.com/dkvvu8tac/image/upload/q_auto,f_auto/v1784816196/hacksymmetric_s18b68.png" },
+  { id: "img-20", title: "Welcome Poster", gradient: "linear-gradient(135deg, #f5576c 0%, #ff6f61 100%)", folder: "design", year: 2025, imageUrl: "https://res.cloudinary.com/dkvvu8tac/image/upload/q_auto,f_auto/v1784816167/welcome_xtyypy.png" },
+  { id: "img-21", title: "Trap Poster", gradient: "linear-gradient(135deg, #f5576c 0%, #ff6f61 100%)", folder: "design", year: 2025, imageUrl: "https://res.cloudinary.com/dkvvu8tac/image/upload/q_auto,f_auto/v1784816162/trap_gwflr1.png" },
+  { id: "img-22", title: "Join Poster", gradient: "linear-gradient(135deg, #f5576c 0%, #ff6f61 100%)", folder: "design", year: 2025, imageUrl: "https://res.cloudinary.com/dkvvu8tac/image/upload/q_auto,f_auto/v1784816157/join_qcc3se.png" },
+  { id: "img-23", title: "Hackathon Poster", gradient: "linear-gradient(135deg, #f5576c 0%, #ff6f61 100%)", folder: "design", year: 2025, imageUrl: "https://res.cloudinary.com/dkvvu8tac/image/upload/q_auto,f_auto/v1784816156/hack1_wqithi.png" },
+  { id: "img-24", title: "Sticker 1", gradient: "linear-gradient(135deg, #f5576c 0%, #ff6f61 100%)", folder: "design", year: 2025, imageUrl: "https://res.cloudinary.com/dkvvu8tac/image/upload/q_auto,f_auto/v1784816144/sticker1_czggaj.png" },
+  { id: "img-25", title: "Sticker 5", gradient: "linear-gradient(135deg, #f5576c 0%, #ff6f61 100%)", folder: "design", year: 2025, imageUrl: "https://res.cloudinary.com/dkvvu8tac/image/upload/q_auto,f_auto/v1784816144/sticker5_oasp0n.png" },
+  { id: "img-26", title: "Sticker 4", gradient: "linear-gradient(135deg, #f5576c 0%, #ff6f61 100%)", folder: "design", year: 2025, imageUrl: "https://res.cloudinary.com/dkvvu8tac/image/upload/q_auto,f_auto/v1784816143/sticker4_chn4ch.png" },
+  { id: "img-27", title: "Sticker 2", gradient: "linear-gradient(135deg, #f5576c 0%, #ff6f61 100%)", folder: "design", year: 2025, imageUrl: "https://res.cloudinary.com/dkvvu8tac/image/upload/q_auto,f_auto/v1784816143/sticker2_nxyiic.png" },
+  { id: "img-28", title: "3D T-Shirt Mockup", gradient: "linear-gradient(135deg, #f5576c 0%, #ff6f61 100%)", folder: "design", year: 2025, imageUrl: "https://res.cloudinary.com/dkvvu8tac/image/upload/q_auto,f_auto/v1784816140/3d-tshirt-mockup-customizable-design-template-0001-grK2w_siq4et.jpg" },
+  { id: "img-29", title: "DevSpace", gradient: "linear-gradient(135deg, #f5576c 0%, #ff6f61 100%)", folder: "design", year: 2025, imageUrl: "https://res.cloudinary.com/dkvvu8tac/image/upload/q_auto,f_auto/v1784816190/devspc_fyif2o.png" },
 ];
 
 /* ═══════════════════════════════════════════
@@ -77,17 +78,7 @@ const SIDEBAR_TREE: SidebarNode[] = [
     isExpanded: true,
     children: [
       { id: "folder_pictures", label: "Pictures", icon: "📁", children: [
-        { id: "asymmetric", label: "Asymmetric Designs", icon: "📁", children: [
-          { id: "techfiesta", label: "Tech Fiesta", icon: "📁" },
-          { id: "hacksymmetric", label: "Hacksymmetric", icon: "📁" },
-        ]},
-        { id: "events", label: "Event Assets", icon: "📁", children: [
-          { id: "talos", label: "TALOS 5.0", icon: "📁" },
-        ]},
-        { id: "creative", label: "Creative Work", icon: "📁", children: [
-          { id: "merchandise", label: "Merchandise", icon: "📁" },
-          { id: "promovideos", label: "Promotional Videos", icon: "📁" },
-        ]}
+        { id: "design", label: "Designs", icon: "📁" }
       ]},
     ]
   },
@@ -101,17 +92,6 @@ const SIDEBAR_TREE: SidebarNode[] = [
       { id: "tag_none", label: "Not Tagged", icon: "🏷️" },
       { id: "tag_design", label: "Design", icon: "🎨" },
       { id: "tag_event", label: "Event", icon: "📅" }
-    ]
-  },
-  {
-    id: "date",
-    label: "Date Taken",
-    icon: "📅",
-    isExpanded: true,
-    children: [
-      { id: "date_2026", label: "2026", icon: "📅" },
-      { id: "date_2025", label: "2025", icon: "📅" },
-      { id: "date_2024", label: "2024", icon: "📅" },
     ]
   },
   {
@@ -191,15 +171,22 @@ function FullscreenViewer({ items, currentIndex, onClose, onPrev, onNext }: View
       </div>
 
       <div style={{
-        width: "70%", maxWidth: 680, aspectRatio: "4 / 3", background: item.gradient,
+        width: "70%", maxWidth: 680, height: "70%", maxHeight: 600, background: item.gradient,
         borderRadius: 8, boxShadow: "0 16px 64px rgba(0,0,0,0.5)",
         display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 12,
         transform: `rotate(${rotation}deg) scale(${zoom})`, transition: "transform 0.3s ease",
+        overflow: "hidden", position: "relative"
       }}>
-        <span style={{ fontSize: 56, opacity: 0.3, color: "white" }}>🖼️</span>
-        <span style={{ fontSize: 18, color: "white", textShadow: "0 2px 8px rgba(0,0,0,0.4)", fontWeight: 600 }}>
-          {item.title}
-        </span>
+        {item.imageUrl ? (
+          <img src={item.imageUrl} alt={item.title} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+        ) : (
+          <>
+            <span style={{ fontSize: 56, opacity: 0.3, color: "white" }}>🖼️</span>
+            <span style={{ fontSize: 18, color: "white", textShadow: "0 2px 8px rgba(0,0,0,0.4)", fontWeight: 600 }}>
+              {item.title}
+            </span>
+          </>
+        )}
       </div>
 
       {currentIndex > 0 && (
@@ -230,7 +217,7 @@ function FullscreenViewer({ items, currentIndex, onClose, onPrev, onNext }: View
 export default function PhotoGallery() {
   const [selectedNodeId, setSelectedNodeId] = useState<string>("all");
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(
-    () => new Set(["tags", "date", "ratings", "folders", "folder_pictures", "asymmetric", "events", "creative"])
+    () => new Set(["tags", "ratings", "folders", "folder_pictures"])
   );
   
   const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
@@ -254,15 +241,9 @@ export default function PhotoGallery() {
     return GALLERY_ITEMS.filter((item) => folderIds.includes(item.folder));
   }, [selectedNodeId]);
 
-  // Group items by year
+  // Group items by category
   const groupedItems = useMemo(() => {
-    const groups: Record<number, GalleryItem[]> = {};
-    visibleItems.forEach(item => {
-      if (!groups[item.year]) groups[item.year] = [];
-      groups[item.year].push(item);
-    });
-    // Sort years descending
-    return Object.entries(groups).sort((a, b) => Number(b[0]) - Number(a[0]));
+    return [["All Designs", visibleItems]] as const;
   }, [visibleItems]);
 
   const toggleExpand = (id: string) => {
@@ -414,25 +395,39 @@ export default function PhotoGallery() {
                         if (idx !== -1) setViewerIndex(idx);
                       }}
                       style={{
-                        padding: 4,
-                        background: isSelected ? "#cce8ff" : "transparent",
+                        padding: 8,
+                        background: isSelected ? "rgba(51, 153, 255, 0.2)" : "transparent",
                         border: isSelected ? "1px solid #99d1ff" : "1px solid transparent",
-                        borderRadius: 3,
+                        borderRadius: 4,
                         cursor: "pointer",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        width: 140
                       }}
                     >
                       <div style={{
-                        width: 100, height: 75,
-                        background: item.gradient,
-                        border: "1px solid #ccc",
-                        boxShadow: "2px 2px 5px rgba(0,0,0,0.15)",
+                        width: 120, height: 100,
                         display: "flex", alignItems: "center", justifyContent: "center",
-                        position: "relative"
+                        position: "relative",
+                        overflow: "hidden",
+                        background: "transparent"
                       }}>
-                        <span style={{ fontSize: 24, color: "rgba(255,255,255,0.3)" }}>🖼️</span>
-                        {item.folder === "promovideos" && (
-                          <div style={{ position: "absolute", inset: 0, borderTop: "4px dashed #333", borderBottom: "4px dashed #333", opacity: 0.5 }} />
+                        {item.imageUrl ? (
+                          <img src={item.imageUrl} alt={item.title} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                        ) : (
+                          <span style={{ fontSize: 24, color: "rgba(0,0,0,0.1)" }}>🖼️</span>
                         )}
+                      </div>
+                      <div style={{
+                        marginTop: 8,
+                        fontSize: 12,
+                        color: "#333",
+                        textAlign: "center",
+                        wordBreak: "break-word",
+                        lineHeight: 1.2
+                      }}>
+                        {item.title}
                       </div>
                     </div>
                   );
