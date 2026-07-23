@@ -28,6 +28,14 @@ export default function Window({ app, children }: WindowProps) {
   const controls = useAnimation();
   const dragControls = useDragControls();
 
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
   // Find index for Flip 3D
   const appIndex = openApps.findIndex((a) => a.id === app.id);
   const totalApps = openApps.length;
@@ -150,7 +158,7 @@ export default function Window({ app, children }: WindowProps) {
   };
 
 
-  if (app.isMaximized && !isFlip3dOpen) {
+  if ((app.isMaximized || isMobile) && !isFlip3dOpen) {
     return (
       <div
         className={`vista-window-frame ${isActive ? "active" : ""}`}
@@ -179,9 +187,11 @@ export default function Window({ app, children }: WindowProps) {
             <button className="window-btn" onClick={handleMinimize} onMouseDown={handleMinimize} title="Minimize">
               ─
             </button>
-            <button className="window-btn" onClick={handleMaximize} onMouseDown={handleMaximize} title="Restore">
-              ❐
-            </button>
+            {!isMobile && (
+              <button className="window-btn" onClick={handleMaximize} onMouseDown={handleMaximize} title="Restore">
+                ❐
+              </button>
+            )}
             <button className="window-btn window-btn-close" onClick={handleClose} onMouseDown={handleClose} title="Close">
               ✕
             </button>

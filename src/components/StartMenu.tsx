@@ -127,13 +127,14 @@ export default function StartMenu({ onLogOff, onShutDown }: StartMenuProps) {
             className="vista-window-frame"
             style={{
               position: "fixed",
-              bottom: 44,
               left: 0,
-              width: 380,
-              height: 480,
-              zIndex: 9998, /* Just under start button */
+              bottom: 44,
+              width: "100%",
+              maxWidth: 400,
+              height: "min(500px, calc(100vh - 44px))",
+              zIndex: 9998,
               display: "flex",
-              padding: "4px", /* Glass border thickness */
+              padding: "4px",
               borderBottomLeftRadius: 0,
             }}
           >

@@ -193,7 +193,7 @@ html, body {
 .window-body {
   background: white;
   flex: 1;
-  overflow: hidden;
+  overflow: auto;
   border: 1px solid rgba(0,0,0,0.4);
   border-radius: 0; /* Content is square inside the glass frame */
   position: relative;

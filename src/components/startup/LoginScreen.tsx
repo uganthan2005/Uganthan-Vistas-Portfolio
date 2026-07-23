@@ -20,7 +20,7 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
       <div className="w-full h-16 bg-gradient-to-r from-[#001082] to-[#1231a4] shadow-md z-10 flex items-center shrink-0"></div>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex w-full h-full relative z-10 items-center justify-center gap-12 px-8 overflow-hidden">
+      <div className="relative z-10 w-full max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-center gap-12 md:gap-24 px-8">
         
         {/* Left Side: Logo */}
         <div className="flex flex-col items-end justify-center w-1/2 max-w-[500px]">
@@ -33,13 +33,14 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
               className="drop-shadow-md shrink-0 mt-1"
             />
             
-            <div className="flex flex-col justify-center text-left">
+            <div className="flex flex-col justify-center mb-10 md:mb-0">
               <h1 
-                className="text-white text-4xl tracking-tight drop-shadow-md mb-2"
+                className="text-white text-3xl md:text-4xl tracking-tight drop-shadow-md mb-2"
                 style={{ fontFamily: "'Trebuchet MS', sans-serif", fontWeight: "bold", fontStyle: "italic" }}
               >
-                Uganthan's<span className="font-light"> Portfolio</span>
+                Uganthan&apos;s<span className="font-light"> Portfolio</span>
               </h1>
+              <div className="h-[2px] w-full max-w-[400px] bg-gradient-to-r from-transparent via-[#2b7194] to-transparent my-1"></div>
               <p className="text-white/90 italic text-base tracking-wide drop-shadow-md max-w-[320px] leading-snug">
                 Student, AI engineer, Software developer, Graphic designer
               </p>
@@ -52,7 +53,7 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
         </div>
 
         {/* Divider Line */}
-        <div className="w-[1px] h-1/2 bg-white/20 shrink-0 mx-4"></div>
+        <div className="hidden md:block w-[1px] h-1/2 bg-white/20 shrink-0 mx-4"></div>
 
         {/* Right Side: User List */}
         <div className="flex flex-col items-start justify-center w-1/2 max-w-[500px]">
@@ -72,9 +73,9 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
               />
             </div>
             
-            <div className="flex flex-col overflow-hidden">
-              <h2 className="text-white text-2xl font-medium drop-shadow-md group-hover:text-[#ffe400] transition-colors truncate mb-1">
-                Uganthan
+            <div className="flex-1 flex flex-col justify-center text-left">
+              <h2 className="text-white text-xl md:text-2xl font-medium drop-shadow-md group-hover:text-[#ffe400] transition-colors truncate mb-1">
+                uganthan_m
               </h2>
               <p className="text-white/80 text-sm font-sans leading-snug">
                 Student, AI engineer, Software developer, Graphic designer
@@ -95,7 +96,7 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
         </div>
         
         <div className="text-white/80 text-xs text-right leading-tight font-sans">
-          After you log on, the system's yours to explore.<br/>
+          After you log on, the system&apos;s yours to explore.<br/>
           Every detail has been designed with a purpose.
         </div>
       </div>

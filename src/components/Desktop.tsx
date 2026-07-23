@@ -563,6 +563,8 @@ export default function Desktop({ wallpaperVersion }: DesktopProps) {
             flexWrap: "wrap",
             gap: 4,
             maxHeight: "calc(100% - 32px)",
+            maxWidth: "calc(100vw - 32px)",
+            overflowX: "auto",
             zIndex: 1,
           }}
           onClick={(e) => e.stopPropagation()}
@@ -751,7 +753,7 @@ export default function Desktop({ wallpaperVersion }: DesktopProps) {
         }}>
           <AeroDialog
             title="Shut Down Windows"
-            width={400}
+            width={typeof window !== 'undefined' ? Math.min(400, window.innerWidth - 32) : 400}
             buttons={
               <button 
                 onClick={() => setIsTurnOffDialogOpen(false)}

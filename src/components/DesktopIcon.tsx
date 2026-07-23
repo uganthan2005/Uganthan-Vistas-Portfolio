@@ -15,11 +15,19 @@ export default function DesktopIcon({ appType, label, icon }: DesktopIconProps) 
 
   const handleClick = useCallback(() => {
     setIsSelected(true);
-  }, []);
+    // On mobile devices, single click opens the app
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      openApp(appType);
+      setIsSelected(false);
+    }
+  }, [appType, openApp]);
 
   const handleDoubleClick = useCallback(() => {
-    openApp(appType);
-    setIsSelected(false);
+    // Only double click on desktop
+    if (typeof window !== "undefined" && window.innerWidth >= 768) {
+      openApp(appType);
+      setIsSelected(false);
+    }
   }, [appType, openApp]);
 
   const handleBlur = useCallback(() => {

@@ -33,10 +33,10 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
           
           <div className="flex flex-col justify-center">
             <h1 
-              className="text-white text-5xl tracking-tight"
+              className="text-white text-4xl md:text-5xl tracking-tight"
               style={{ fontFamily: "'Trebuchet MS', sans-serif", fontWeight: "bold", fontStyle: "italic" }}
             >
-              Uganthan's<span className="font-light"> Portfolio</span>
+              Uganthan&apos;s<span className="font-light"> Portfolio</span>
             </h1>
             <p className="text-white/80 italic text-xl mt-1 tracking-wide">
               Student, AI engineer, Software developer, Graphic designer
@@ -63,7 +63,7 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
         <span>Enter Full Screen (F11)</span>
       </div>
 
-      <div className="absolute bottom-8 right-8 text-white font-bold text-2xl italic flex items-center">
+      <div className="absolute bottom-8 right-8 text-white font-bold text-xl md:text-2xl italic flex items-center">
         Portfolio<sup className="text-xs ml-1">®</sup>
       </div>
 

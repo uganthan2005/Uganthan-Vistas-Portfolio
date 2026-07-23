@@ -142,7 +142,7 @@ export default function Taskbar({
       </button>
 
       {/* Open App Buttons */}
-      <div style={{ display: "flex", flex: 1, overflow: "hidden", marginLeft: 4 }}>
+      <div style={{ display: "flex", flex: 1, overflowX: "auto", overflowY: "hidden", marginLeft: 4, scrollbarWidth: "none" }}>
         {openApps.map((app) => (
           <button
             key={app.id}
@@ -172,7 +172,7 @@ export default function Taskbar({
       </div>
 
       {/* System Tray */}
-      <div className="system-tray" style={{ position: "relative", display: "flex", alignItems: "center", padding: "0 12px 0 8px", gap: 2 }}>
+      <div className="system-tray hidden sm:flex" style={{ position: "relative", alignItems: "center", padding: "0 12px 0 8px", gap: 2 }}>
         <div style={{ color: "white", fontSize: 10, marginRight: 6, opacity: 0.8, cursor: "pointer", filter: "drop-shadow(0px 1px 1px rgba(0,0,0,0.8))" }}>
           {"<"}
         </div>
