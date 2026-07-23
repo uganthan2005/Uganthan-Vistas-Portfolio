@@ -21,21 +21,22 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
       
       {/* Main Logo Container */}
       <div className="flex flex-col items-center mb-16">
-        <div className="flex items-center space-x-6">
+        <div className="flex items-center space-x-16">
           <Image 
             src="/icons/Start-icon.png" 
             alt="Windows Logo" 
             width={96} 
             height={96}
             className="drop-shadow-lg"
+            priority
           />
           
           <div className="flex flex-col justify-center">
             <h1 
-              className="text-white text-6xl tracking-tight"
+              className="text-white text-5xl tracking-tight"
               style={{ fontFamily: "'Trebuchet MS', sans-serif", fontWeight: "bold", fontStyle: "italic" }}
             >
-              Uganthan<span className="font-light"> Vistas</span>
+              Uganthan's<span className="font-light"> Portfolio</span>
             </h1>
             <p className="text-white/80 italic text-xl mt-1 tracking-wide">
               Student, AI engineer, Software developer, Graphic designer

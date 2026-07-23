@@ -19,7 +19,7 @@ interface Playlist {
 const PLAYLISTS: Playlist[] = [
   {
     id: "daily-mix",
-    title: "Daily Mix",
+    title: "i'm going back to 505",
     artist: "Spotify",
     url: "https://open.spotify.com/playlist/54s8l4jDOgA9CsP0jZtBYl?si=f4739c5009d54c69",
     gradientFrom: "#7c3aed",
@@ -27,7 +27,7 @@ const PLAYLISTS: Playlist[] = [
   },
   {
     id: "chill-vibes",
-    title: "Chill Vibes",
+    title: "poet uh",
     artist: "Spotify",
     url: "https://open.spotify.com/playlist/0ypm6Khrgzc6Y0ZrjsIgUH?si=c1dae53c84f3463c",
     gradientFrom: "#0d9488",
@@ -35,7 +35,7 @@ const PLAYLISTS: Playlist[] = [
   },
   {
     id: "coding-flow",
-    title: "Coding Flow",
+    title: "Tamasha",
     artist: "Various Artists",
     url: "https://open.spotify.com/playlist/3oaGjrR7ZoIJtC3cLkoF5W?si=1b2a00aaf5174919",
     gradientFrom: "#ea580c",
@@ -43,27 +43,11 @@ const PLAYLISTS: Playlist[] = [
   },
   {
     id: "lofi-beats",
-    title: "Lo-Fi Beats",
-    artist: "Lofi Girl",
-    url: "#",
+    title: "harris mamey",
+    artist: "Spotify",
+    url: "https://open.spotify.com/playlist/2cj9q2j9zFZvaboPdnNdUt",
     gradientFrom: "#f59e0b",
     gradientTo: "#d946ef",
-  },
-  {
-    id: "retro-synth",
-    title: "Retro Synth",
-    artist: "Synthwave",
-    url: "#",
-    gradientFrom: "#ec4899",
-    gradientTo: "#8b5cf6",
-  },
-  {
-    id: "night-drive",
-    title: "Night Drive",
-    artist: "Kavinsky",
-    url: "#",
-    gradientFrom: "#1e3a5f",
-    gradientTo: "#0ea5e9",
   },
 ];
 

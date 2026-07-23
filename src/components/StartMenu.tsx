@@ -4,7 +4,7 @@
 import React from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaGithub, FaLinkedin, FaBehance, FaEnvelope, FaInstagram } from "react-icons/fa";
+import { FaGithub, FaLinkedin, FaBehance, FaEnvelope, FaInstagram, FaPowerOff, FaLock } from "react-icons/fa";
 import { SiLetterboxd } from "react-icons/si";
 import { useDesktopStore, APP_REGISTRY } from "@/store/useDesktopStore";
 
@@ -319,13 +319,15 @@ export default function StartMenu({ onLogOff, onShutDown }: StartMenuProps) {
                 {/* Session Buttons */}
                 <div style={{ display: "flex", gap: 4, marginTop: "auto", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 8 }}>
                    <button 
-                     onClick={onLogOff}
-                     style={{ flex: 1, padding: "4px", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 4, color: "white", cursor: "pointer", fontSize: 11 }}
-                   >Log Off</button>
-                   <button 
                      onClick={onShutDown}
-                     style={{ flex: 1, padding: "4px", background: "rgba(200,50,50,0.6)", border: "1px solid rgba(255,50,50,0.4)", borderRadius: 4, color: "white", cursor: "pointer", fontSize: 11 }}
-                   >Lock</button>
+                     title="Shut Down"
+                     style={{ flex: 1, padding: "6px", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 4, color: "white", cursor: "pointer", display: "flex", justifyContent: "center", alignItems: "center" }}
+                   ><FaPowerOff size={14} /></button>
+                   <button 
+                     onClick={onLogOff}
+                     title="Lock"
+                     style={{ flex: 1, padding: "6px", background: "rgba(200,50,50,0.6)", border: "1px solid rgba(255,50,50,0.4)", borderRadius: 4, color: "white", cursor: "pointer", display: "flex", justifyContent: "center", alignItems: "center" }}
+                   ><FaLock size={14} /></button>
                 </div>
               </div>
             </div>

@@ -24,7 +24,7 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
         
         {/* Left Side: Logo */}
         <div className="flex flex-col items-end justify-center w-1/2 max-w-[500px]">
-          <div className="flex items-start space-x-6 mb-4">
+          <div className="flex items-start gap-6 mb-4">
             <Image 
               src="/icons/Start-icon.png" 
               alt="Windows Logo" 
@@ -35,10 +35,10 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
             
             <div className="flex flex-col justify-center text-left">
               <h1 
-                className="text-white text-5xl tracking-tight drop-shadow-md mb-2"
+                className="text-white text-4xl tracking-tight drop-shadow-md mb-2"
                 style={{ fontFamily: "'Trebuchet MS', sans-serif", fontWeight: "bold", fontStyle: "italic" }}
               >
-                Uganthan<span className="font-light"> Vistas</span>
+                Uganthan's<span className="font-light"> Portfolio</span>
               </h1>
               <p className="text-white/90 italic text-base tracking-wide drop-shadow-md max-w-[320px] leading-snug">
                 Student, AI engineer, Software developer, Graphic designer
@@ -60,7 +60,7 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
           {/* User Card */}
           <button 
             onClick={onLogin}
-            className="group flex items-center space-x-5 p-4 rounded-xl border border-transparent hover:border-white/30 hover:bg-white/10 transition-all cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-white/50 w-full max-w-[420px]"
+            className="group flex items-center gap-8 p-4 rounded-xl border border-transparent hover:border-white/30 hover:bg-white/10 transition-all cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-white/50 w-full max-w-[420px]"
           >
             {/* Profile Picture */}
             <div className="w-20 h-20 rounded border-[3px] border-white/80 overflow-hidden shadow-lg shrink-0 relative bg-black/20">

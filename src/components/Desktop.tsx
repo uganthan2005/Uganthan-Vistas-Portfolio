@@ -13,6 +13,7 @@ import SecurityModal from "@/components/SecurityModal";
 import AeroDialog from "@/components/AeroDialog";
 import StartMenu from "@/components/StartMenu";
 import NotificationBalloon from "@/components/NotificationBalloon";
+import { FaPowerOff } from "react-icons/fa";
 
 /* Dynamic imports for apps to reduce initial bundle */
 import dynamic from "next/dynamic";
@@ -350,6 +351,8 @@ type DesktopProps = {
 export default function Desktop({ wallpaperVersion }: DesktopProps) {
   const { openApps, hasBooted, setBoot, resetSession, closeStartMenu } = useDesktopStore();
   const [hasLoggedIn, setHasLoggedIn] = useState(false);
+  const [isShuttingDown, setIsShuttingDown] = useState(false);
+  const [isTurnOffDialogOpen, setIsTurnOffDialogOpen] = useState(false);
 
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showFullscreenPrompt, setShowFullscreenPrompt] = useState(false);
@@ -400,18 +403,17 @@ export default function Desktop({ wallpaperVersion }: DesktopProps) {
       void document.exitFullscreen();
     }
     
-    // Play shutdown sound
-    const audio = new Audio("/sounds/winxpshutdown.mp3");
-    audio.play().catch(() => {});
-    
-    setSessionState("logging_out");
-  }, [setSessionState]);
+    setSessionState("logged_out");
+    resetSession();
+  }, [setSessionState, resetSession]);
 
   const handleShutDown = useCallback(() => {
-    resetSession();
-    setHasLoggedIn(false);
     setShowNotificationCenter(false);
+    setIsTurnOffDialogOpen(true);
+  }, []);
 
+  const executeShutDown = useCallback(() => {
+    setIsTurnOffDialogOpen(false);
     setIsFullscreen(false);
     setIsCrtEnabled(true);
     setHasDismissedFullscreenPrompt(false);
@@ -419,6 +421,23 @@ export default function Desktop({ wallpaperVersion }: DesktopProps) {
     if (document.fullscreenElement) {
       void document.exitFullscreen();
     }
+    
+    // Play shutdown sound
+    const audio = new Audio("/sounds/winxpshutdown.mp3");
+    audio.play().catch(() => {});
+
+    setIsShuttingDown(true);
+
+    window.setTimeout(() => {
+      resetSession();
+      setHasLoggedIn(false);
+      setIsShuttingDown(false);
+    }, 2500);
+  }, [resetSession]);
+
+  const executeRestart = useCallback(() => {
+    setIsTurnOffDialogOpen(false);
+    resetSession();
     window.setTimeout(() => window.location.reload(), 250);
   }, [resetSession]);
 
@@ -714,29 +733,56 @@ export default function Desktop({ wallpaperVersion }: DesktopProps) {
       {/* Security Modal */}
       <SecurityModal />
 
-      {/* Logging Out Overlay */}
-      {sessionState === "logging_out" && (
-        <AeroDialog
-          title="Logging off"
-          icon="info"
-          width={400}
-          buttons={
-            <button
-              onClick={() => {
-                setSessionState("logged_out");
-                resetSession();
-              }}
-              className="px-4 py-1 border border-[#0078d7] rounded bg-gradient-to-b from-[#e5f1fb] to-[#cbe4f7] shadow-[0_0_0_1px_#0078d7_inset] text-black text-[13px] min-w-[80px] focus:outline-none"
-            >
-              OK
-            </button>
-          }
-        >
-          <div className="flex flex-col gap-1 text-[14px]">
-            <span className="font-semibold text-[15px]">System Shutdown</span>
-            <span>Saving your settings and closing applications...</span>
-          </div>
-        </AeroDialog>
+
+
+      {/* Shutdown Black Screen */}
+      {isShuttingDown && (
+        <div style={{ position: "fixed", inset: 0, background: "black", zIndex: 999999 }} />
+      )}
+
+      {/* Turn Off Computer XP Dialog */}
+      {isTurnOffDialogOpen && (
+        <div style={{
+          position: "fixed", inset: 0, 
+          background: "rgba(0,0,0,0.1)",
+          backdropFilter: "grayscale(100%)",
+          zIndex: 99999,
+          display: "flex", alignItems: "center", justifyContent: "center"
+        }}>
+          <AeroDialog
+            title="Shut Down Windows"
+            width={400}
+            buttons={
+              <button 
+                onClick={() => setIsTurnOffDialogOpen(false)}
+                className="px-4 py-1 border border-[#0078d7] rounded bg-gradient-to-b from-[#e5f1fb] to-[#cbe4f7] shadow-[0_0_0_1px_#0078d7_inset] text-black text-[13px] min-w-[80px] focus:outline-none"
+              >
+                Cancel
+              </button>
+            }
+          >
+            <div className="flex justify-center gap-10 items-center py-8">
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", cursor: "pointer", opacity: 0.5 }}>
+                <div className="w-12 h-12 rounded border border-[#a3a3a3] bg-gradient-to-b from-[#fcd34d] to-[#d97706] shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),_0_2px_4px_rgba(0,0,0,0.3)] flex items-center justify-center text-white text-2xl">
+                  <FaPowerOff />
+                </div>
+                <span className="text-black text-[12px] mt-2 font-medium">Stand By</span>
+              </div>
+              <div onClick={executeShutDown} style={{ display: "flex", flexDirection: "column", alignItems: "center", cursor: "pointer" }}>
+                <div className="w-12 h-12 rounded border border-[#a3a3a3] bg-gradient-to-b from-[#f87171] to-[#dc2626] shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),_0_2px_4px_rgba(0,0,0,0.3)] flex items-center justify-center text-white text-2xl">
+                  <FaPowerOff />
+                </div>
+                <span className="text-black text-[12px] mt-2 font-medium">Turn Off</span>
+              </div>
+              <div onClick={executeRestart} style={{ display: "flex", flexDirection: "column", alignItems: "center", cursor: "pointer" }}>
+                <div className="w-12 h-12 rounded border border-[#a3a3a3] bg-gradient-to-b from-[#4ade80] to-[#16a34a] shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),_0_2px_4px_rgba(0,0,0,0.3)] flex items-center justify-center text-white text-2xl">
+                  <span style={{ transform: "rotate(90deg)" }}><FaPowerOff /></span>
+                </div>
+                <span className="text-black text-[12px] mt-2 font-medium">Restart</span>
+              </div>
+            </div>
+          </AeroDialog>
+        </div>
       )}
     </div>
   );

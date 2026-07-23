@@ -34,7 +34,7 @@ export default function AeroDialog({
       >
         {/* Title Bar (Green Aero Glass) */}
         <div 
-          className="relative flex items-center h-9 px-3 shrink-0"
+          className="relative flex items-center h-9 px-4 shrink-0"
           style={{
             background: "linear-gradient(to bottom, #d2eec4 0%, #a8d597 45%, #88c273 50%, #7db966 100%)",
             borderBottom: "1px solid #7db966"
@@ -93,7 +93,7 @@ export default function AeroDialog({
 
         {/* Footer Buttons */}
         {buttons && (
-          <div className="bg-[#f0f0f0] border-t border-[#dfdfdf] px-4 py-3 flex justify-end gap-2 shrink-0">
+          <div className="bg-[#f0f0f0] border-t border-[#dfdfdf] px-5 py-4 flex justify-end gap-3 shrink-0">
             {buttons}
           </div>
         )}
